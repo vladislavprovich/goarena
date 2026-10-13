@@ -1,5 +1,0 @@
-#phase populate-start
-#phase populate-end
-#phase measure-start
-#phase measure-end
-goarena        n=10000000  v=128   g=16  ops/s=31935643     p50=363ns p99=1295ns p999=21247ns max=2.71ms gc=0 gcCPU=0.00% heap=2MiB rss=2103MiB offheap=2112MiB populate=0.54s

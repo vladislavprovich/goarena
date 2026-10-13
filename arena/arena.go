@@ -7,7 +7,7 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	"github.com/savokh/goarena/internal/cmem"
+	"github.com/vladislavprovich/goarena/internal/cmem"
 )
 
 // Default and limit values of [Config].
@@ -55,42 +55,6 @@ type Config struct {
 	// MaxBytes limits the total number of bytes the arena may reserve from
 	// C (regular plus dedicated chunks). Zero means unlimited.
 	MaxBytes int64
-}
-
-// Ref is a compact, GC-invisible reference to memory inside an [Arena]:
-//
-//	bits 63..32  chunk index + 1   (0 means "nil")
-//	bits 31..0   byte offset inside the chunk
-//
-// A Ref is a plain integer, so it can be stored in C memory, in pointer-free
-// Go structures (which the garbage collector never scans) or on disk.
-type Ref uint64
-
-// Nil is the zero Ref; it never refers to valid memory.
-const Nil Ref = 0
-
-// makeRef builds a Ref from a chunk index and an offset.
-func makeRef(chunk int, off uint32) Ref { return Ref(uint64(chunk+1)<<32 | uint64(off)) }
-
-// Chunk returns the chunk index encoded in r (-1 for Nil).
-func (r Ref) Chunk() int { return int(uint32(r>>32)) - 1 }
-
-// Offset returns the byte offset encoded in r.
-func (r Ref) Offset() uint32 { return uint32(r) }
-
-// IsNil reports whether r is the nil reference.
-func (r Ref) IsNil() bool { return r == Nil }
-
-// Add returns r advanced by n bytes inside the same chunk. The caller is
-// responsible for staying within the chunk.
-func (r Ref) Add(n int) Ref { return r + Ref(n) }
-
-// String implements fmt.Stringer.
-func (r Ref) String() string {
-	if r == Nil {
-		return "Ref(nil)"
-	}
-	return fmt.Sprintf("Ref(%d:%d)", r.Chunk(), r.Offset())
 }
 
 // chunk describes one block of C memory owned by the arena.
@@ -178,89 +142,6 @@ func MustNew(cfg Config) *Arena {
 // ChunkSize returns the configured chunk size.
 func (a *Arena) ChunkSize() int { return int(a.chunkSize) }
 
-func alignUp(n uintptr) uintptr { return (n + Alignment - 1) &^ (Alignment - 1) }
-
-// Alloc reserves n bytes (rounded up to 8) and returns a reference to them.
-// The memory is not zeroed. It returns ErrInvalidSize for n <= 0 or
-// n > MaxAlloc, ErrOutOfMemory when MaxBytes would be exceeded and
-// ErrReleased after Release.
-func (a *Arena) Alloc(n int) (Ref, error) {
-	if n <= 0 || n > MaxAlloc {
-		return Nil, ErrInvalidSize
-	}
-	sz := alignUp(uintptr(n))
-	a.mu.Lock()
-	if a.released {
-		a.mu.Unlock()
-		return Nil, ErrReleased
-	}
-	if sz > a.chunkSize {
-		ref, err := a.allocDedicatedLocked(sz)
-		if err == nil {
-			a.used += int64(sz)
-			a.allocs++
-		}
-		a.mu.Unlock()
-		return ref, err
-	}
-	if a.cur < 0 || a.off+sz > a.tableLocked()[a.cur].size {
-		if err := a.nextChunkLocked(); err != nil {
-			a.mu.Unlock()
-			return Nil, err
-		}
-	}
-	ref := makeRef(a.cur, uint32(a.off))
-	a.off += sz
-	a.used += int64(sz)
-	a.allocs++
-	a.mu.Unlock()
-	return ref, nil
-}
-
-// AllocDedicated allocates n bytes in a chunk of its own, independently of
-// the chunk size, and returns its reference (offset 0). Unlike regular
-// allocations, a dedicated block can be returned individually with
-// [Arena.FreeDedicated]. Slab uses it for objects larger than its biggest
-// size class.
-func (a *Arena) AllocDedicated(n int) (Ref, error) {
-	if n <= 0 || n > MaxAlloc {
-		return Nil, ErrInvalidSize
-	}
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	if a.released {
-		return Nil, ErrReleased
-	}
-	ref, err := a.allocDedicatedLocked(alignUp(uintptr(n)))
-	if err == nil {
-		a.allocs++
-	}
-	return ref, err
-}
-
-// FreeDedicated returns a block obtained from [Arena.AllocDedicated] (or a
-// large Alloc) to C. It panics if ref does not refer to the start of a live
-// dedicated chunk.
-func (a *Arena) FreeDedicated(ref Ref) {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	if a.released {
-		return // everything is already gone
-	}
-	idx := ref.Chunk()
-	t := a.tableLocked()
-	if idx < 0 || idx >= len(t) || ref.Offset() != 0 || t[idx].base == nil || !t[idx].dedicated {
-		panic(fmt.Sprintf("arena: FreeDedicated(%v): not a live dedicated chunk", ref))
-	}
-	c := t[idx]
-	cmem.Free(c.base)
-	t[idx] = chunk{}
-	a.freeSlots = append(a.freeSlots, idx)
-	a.reserved -= int64(c.size)
-	a.dedicated--
-	a.dedicatedSz -= int64(c.size)
-}
-
 // tableLocked returns the current chunk slice; a.mu must be held.
 func (a *Arena) tableLocked() []chunk { return a.tab.Load().chunks }
 
@@ -304,96 +185,6 @@ func (a *Arena) reserveLocked(sz uintptr) (unsafe.Pointer, error) {
 	a.chunkMallocs++
 	return p, nil
 }
-
-func (a *Arena) allocDedicatedLocked(sz uintptr) (Ref, error) {
-	p, err := a.reserveLocked(sz)
-	if err != nil {
-		return Nil, err
-	}
-	idx := a.addChunkLocked(chunk{base: p, size: sz, dedicated: true})
-	a.dedicated++
-	a.dedicatedSz += int64(sz)
-	return makeRef(idx, 0), nil
-}
-
-// nextChunkLocked makes the next regular chunk current, reusing a chunk kept
-// by Reset when possible.
-func (a *Arena) nextChunkLocked() error {
-	t := a.tableLocked()
-	if a.cur >= 0 {
-		a.wasted += int64(t[a.cur].size - a.off)
-	}
-	if a.curPos+1 < len(a.regs) {
-		a.curPos++
-		a.cur, a.off = a.regs[a.curPos], 0
-		return nil
-	}
-	p, err := a.reserveLocked(a.chunkSize)
-	if err != nil {
-		if a.cur >= 0 {
-			a.wasted -= int64(t[a.cur].size - a.off) // nothing was abandoned
-		}
-		return err
-	}
-	a.cur = a.addChunkLocked(chunk{base: p, size: a.chunkSize})
-	a.regs = append(a.regs, a.cur)
-	a.curPos = len(a.regs) - 1
-	a.off = 0
-	a.regular++
-	return nil
-}
-
-// resolve validates (ref, n) and returns the address of the first byte.
-func (a *Arena) resolve(ref Ref, n int) unsafe.Pointer {
-	t := a.tab.Load().chunks
-	idx := uint32(ref>>32) - 1 // Nil wraps around to MaxUint32
-	if uint64(idx) >= uint64(len(t)) {
-		panic(fmt.Sprintf("arena: invalid reference %v", ref))
-	}
-	c := &t[idx]
-	off := uintptr(uint32(ref))
-	if c.base == nil || n < 0 || off+uintptr(n) > c.size {
-		panic(fmt.Sprintf("arena: reference %v with length %d out of bounds", ref, n))
-	}
-	return unsafe.Add(c.base, off)
-}
-
-// TryPointer is a non-panicking variant of [Arena.Pointer] that also checks
-// that n bytes starting at ref lie inside a live chunk. It returns false
-// for Nil, unknown chunks and out-of-range lengths.
-//
-// It exists for optimistic (lock-free, validated-afterwards) readers such
-// as the store's seqlock read path, which may observe a torn or stale Ref
-// and must reject it instead of panicking. TryPointer never writes and is
-// safe to call concurrently with Alloc.
-func (a *Arena) TryPointer(ref Ref, n int) (unsafe.Pointer, bool) {
-	t := a.tab.Load().chunks
-	idx := uint32(ref>>32) - 1
-	if uint64(idx) >= uint64(len(t)) || n < 0 {
-		return nil, false
-	}
-	c := &t[idx]
-	off := uintptr(uint32(ref))
-	if c.base == nil || off+uintptr(n) > c.size {
-		return nil, false
-	}
-	return unsafe.Add(c.base, off), true
-}
-
-// Bytes returns an n-byte slice that aliases the arena memory at ref.
-//
-// The slice is a view, not a copy: it becomes invalid (dangling) after the
-// memory is freed, after Reset and after Release. Never store it, and never
-// write Go pointers into it. Bytes panics if ref is Nil or the range is
-// outside of the chunk.
-func (a *Arena) Bytes(ref Ref, n int) []byte {
-	p := a.resolve(ref, n)
-	return unsafe.Slice((*byte)(p), n)
-}
-
-// Pointer returns the raw address of ref. The same validity rules as for
-// [Arena.Bytes] apply.
-func (a *Arena) Pointer(ref Ref) unsafe.Pointer { return a.resolve(ref, 0) }
 
 // Reset invalidates every allocation but keeps the regular chunks for reuse;
 // dedicated chunks are returned to C. Reset after Release is a no-op.
@@ -448,47 +239,9 @@ func (a *Arena) Release() {
 	a.regular, a.dedicated, a.dedicatedSz = 0, 0, 0
 }
 
-// ReservedBytes returns the number of bytes currently reserved from C. It
-// is cheaper than [Arena.Stats] and safe for concurrent use.
-func (a *Arena) ReservedBytes() int64 {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	return a.reserved
-}
-
 // Released reports whether Release has been called.
 func (a *Arena) Released() bool {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	return a.released
-}
-
-// Stats describes the memory usage of an arena.
-type Stats struct {
-	ChunkSize       int    // configured regular chunk size
-	Chunks          int    // live regular chunks
-	DedicatedChunks int    // live dedicated (large-object) chunks
-	DedicatedBytes  int64  // bytes in dedicated chunks
-	ReservedBytes   int64  // bytes reserved from C (all chunks)
-	UsedBytes       int64  // bytes handed out since the last Reset
-	WastedBytes     int64  // chunk tails abandoned when switching chunks
-	Allocs          uint64 // successful allocations since creation
-	ChunkMallocs    uint64 // chunks requested from C since creation
-}
-
-// Stats returns a snapshot of the arena statistics.
-func (a *Arena) Stats() Stats {
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	return Stats{
-		ChunkSize:       int(a.chunkSize),
-		Chunks:          a.regular,
-		DedicatedChunks: a.dedicated,
-		DedicatedBytes:  a.dedicatedSz,
-		ReservedBytes:   a.reserved,
-		UsedBytes:       a.used,
-		WastedBytes:     a.wasted,
-		Allocs:          a.allocs,
-		ChunkMallocs:    a.chunkMallocs,
-	}
 }

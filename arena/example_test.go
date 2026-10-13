@@ -3,7 +3,7 @@ package arena_test
 import (
 	"fmt"
 
-	"github.com/savokh/goarena/arena"
+	"github.com/vladislavprovich/goarena/arena"
 )
 
 func ExampleArena() {

@@ -1,2 +1,0 @@
-2026/10/13 19:05:08 httpcache (goarena backend) listening on http://127.0.0.1:8080/dashboard
-2026/10/13 19:05:08 selfload: populated 2000000 keys in 432ms

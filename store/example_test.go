@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/savokh/goarena/store"
+	"github.com/vladislavprovich/goarena/store"
 )
 
 func Example() {
