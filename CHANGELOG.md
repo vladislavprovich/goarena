@@ -4,11 +4,51 @@ All notable changes to this project are documented in this file. The format
 follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.3.1] - 2026-10-14
+
+Repository and packaging release: no change to the public API or to the
+behaviour of any package.
+
+### Added
+
+- Runnable examples, each with a short README: `examples/quickstart`
+  (store tour), `examples/typed-arena` (typed values and slices in an
+  `Arena`, `Slab` alloc/free) and `examples/gc-pacing` (GC cycles with and
+  without `store.Config.GCPacing`, measured with `gcstats`).
+- Continuous integration (`.github/workflows/ci.yml`): gofmt, `go vet`,
+  `go build`, `go test` on Linux, Windows and macOS, `go test -race` on
+  Linux and macOS, and a run of the examples.
+- `docs/BENCHMARKS.md` (methodology and results), `docs/DESIGN.md`
+  (formerly `DESIGN_NOTES.md`, now with a per-file source map) and
+  `docs/CONTRIBUTING.md`.
+- `internal/version`: the module version (`version.Module`) that
+  `goarena-bench` writes into its result documents.
+
+### Changed
+
+- Module path is `github.com/vladislavprovich/goarena`; `go.mod` declares
+  `go 1.27` (the minimum supported version).
+- Repository layout: no Go code in the root; programs import
+  `github.com/vladislavprovich/goarena/store` (or `.../arena`) directly.
+  Source files are split by responsibility and carry descriptive names
+  (for example `store/optimistic_read.go`, `store/store_write_operations.go`,
+  `arena/slab_size_classes.go`, `gcpace/default_pacer.go`,
+  `gcstats/process_metrics_windows.go`), with tests next to the code they
+  test. The `httpcache` dashboard moved to `examples/httpcache/web/`.
+- Makefile: `make build` builds the benchmark harness and every example
+  into `bin/`; new target `make examples` runs the examples.
+
+### Removed
+
+- Benchmark result files, measurement scripts and screenshot tooling from
+  the repository; `cmd/goarena-bench` reproduces every experiment and writes
+  to the git-ignored `results/` directory.
+
 ## [0.3.0] - 2026-10-13
 
 Focused iteration on the two v0.2.0 losses: request-garbage services
-(E9/E10) and memory for 256 B - 4 KiB values (E4). The v0.2.0 results are
-preserved in `results/v2/`.
+(E9/E10) and memory for 256 B - 4 KiB values (E4). See
+[docs/BENCHMARKS.md](docs/BENCHMARKS.md).
 
 ### Added
 
@@ -43,8 +83,7 @@ preserved in `results/v2/`.
 ## [0.2.0] - 2026-10-13
 
 Optimisation round driven by the v0.1.0 measurements (memory versus the
-pointer-free Go-heap baseline, tail latency under hot keys). The v0.1.0
-results are preserved in `results/v1/`.
+pointer-free Go-heap baseline, tail latency under hot keys).
 
 ### Changed
 
@@ -84,7 +123,6 @@ results are preserved in `results/v1/`.
   memory-budget guard that records skipped runs), E9 (service with request
   garbage) and E10 (container memory budget via `debug.SetMemoryLimit`),
   new aggregated metrics (read/write p99.9, STW ms/s, garbage settings).
-- `scripts/run_all_v2.sh`: the complete v2 benchmark session.
 
 ## [0.1.0] - 2026-10-13
 
@@ -120,5 +158,4 @@ results are preserved in `results/v1/`.
   live dashboard, in-process load generator and a `gomap` backend for
   comparison.
 - Unit tests, differential fuzz test, concurrency stress tests, leak and
-  finalizer tests, examples, micro-benchmarks, PowerShell/Python scripts and
-  `tools/term2png.py`.
+  finalizer tests, examples and micro-benchmarks.

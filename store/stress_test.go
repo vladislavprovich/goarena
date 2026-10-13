@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/savokh/goarena/internal/cmem"
+	"github.com/vladislavprovich/goarena/internal/cmem"
 )
 
 // TestConcurrentStress runs readers, writers and deleters concurrently on a

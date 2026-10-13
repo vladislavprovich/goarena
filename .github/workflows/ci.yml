@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    env:
+      # goarena allocates its off-heap memory through cgo (internal/cmem).
+      CGO_ENABLED: "1"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.27.x'
+
+      # MinGW-w64 is preinstalled on the Windows runner image; make sure its
+      # gcc is first on PATH so that cgo finds it.
+      - name: Set up gcc (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          if [ -d /c/mingw64/bin ]; then echo 'C:\mingw64\bin' >> "$GITHUB_PATH"; fi
+
+      - name: Toolchain versions
+        run: |
+          go version
+          gcc --version || cc --version
+
+      - name: gofmt
+        # Windows checkouts may convert line endings; check formatting once.
+        if: runner.os == 'Linux'
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "These files are not gofmt-formatted:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: go build
+        run: go build ./...
+
+      - name: go test
+        run: go test -count=1 ./...
+
+      - name: go test -race
+        # On Windows the race detector with cgo depends on the MinGW-w64
+        # version of the runner image (it is verified locally with GCC 14.2,
+        # see docs/DESIGN.md, section 13.3), so CI runs it on Linux and macOS.
+        if: runner.os != 'Windows'
+        run: go test -race -count=1 ./...
+
+      - name: Run examples
+        run: |
+          go run ./examples/quickstart
+          go run ./examples/typed-arena
+          go run ./examples/gc-pacing

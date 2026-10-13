@@ -4,7 +4,6 @@
 *.test
 *.prof
 *.out
-!/results/coverage.out
 
 # fuzzing corpus generated locally (seed corpus lives in the test file)
 testdata/fuzz/
@@ -16,5 +15,6 @@ testdata/fuzz/
 .DS_Store
 Thumbs.db
 
-# temporary benchmark files
+# benchmark output (goarena-bench matrix/aggregate)
+/results/
 *.json.tmp

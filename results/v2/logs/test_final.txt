@@ -1,9 +1,0 @@
-?   	github.com/savokh/goarena	[no test files]
-ok  	github.com/savokh/goarena/arena	0.424s
-ok  	github.com/savokh/goarena/cmd/goarena-bench	3.179s
-ok  	github.com/savokh/goarena/examples/httpcache	3.124s
-ok  	github.com/savokh/goarena/gcstats	0.447s
-ok  	github.com/savokh/goarena/internal/cmem	0.408s
-ok  	github.com/savokh/goarena/internal/latency	0.421s
-ok  	github.com/savokh/goarena/internal/tsc	0.623s
-ok  	github.com/savokh/goarena/store	4.457s
