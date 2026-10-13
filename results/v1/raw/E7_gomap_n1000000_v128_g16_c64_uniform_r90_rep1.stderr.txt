@@ -1,0 +1,38 @@
+#phase populate-start
+gc 1 @0.237s 0%: 0+0.71+0 ms clock, 0+0.71/2.8/2.1+0 ms cpu, 3->4->2 MB, 4 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 2 @0.238s 0%: 0+0.73+0.50 ms clock, 0+0.52/2.1/0+8.1 ms cpu, 5->7->5 MB, 6 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 3 @0.240s 0%: 0+1.4+0 ms clock, 0+1.5/2.6/0.29+0 ms cpu, 10->13->11 MB, 12 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 4 @0.243s 0%: 0+1.8+0 ms clock, 0+0/5.4/0+0 ms cpu, 20->25->21 MB, 23 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 5 @0.248s 0%: 0+2.5+0 ms clock, 0+0.060/7.0/6.3+0 ms cpu, 37->41->35 MB, 43 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 6 @0.257s 1%: 0+3.1+0.50 ms clock, 0+0/10/10+8.0 ms cpu, 61->68->61 MB, 72 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 7 @0.274s 1%: 0+6.0+0 ms clock, 0+3.3/22/19+0 ms cpu, 104->117->106 MB, 122 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 8 @0.301s 2%: 1.0+8.6+0 ms clock, 16+0.99/34/41+0 ms cpu, 182->193->174 MB, 213 MB goal, 0 MB stacks, 0 MB globals, 16 P
+#phase populate-end
+gc 9 @0.379s 2%: 0+17+0 ms clock, 0+4.9/64/40+0 ms cpu, 307->312->246 MB, 348 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 10 @0.744s 2%: 0.30+16+0.51 ms clock, 4.8+0/66/54+8.2 ms cpu, 420->424->246 MB, 493 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 11 @1.104s 1%: 0.71+18+0 ms clock, 11+0/69/68+0 ms cpu, 420->423->245 MB, 493 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 12 @1.469s 1%: 0.16+13+0 ms clock, 2.6+1.6/47/81+0 ms cpu, 419->421->244 MB, 492 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 13 @1.880s 1%: 0+13+0 ms clock, 0+1.7/52/81+0 ms cpu, 442->444->244 MB, 488 MB goal, 0 MB stacks, 0 MB globals, 16 P
+#phase measure-start
+gc 14 @2.371s 1%: 0+18+0 ms clock, 0+7.7/72/69+0 ms cpu, 481->485->246 MB, 489 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 15 @2.877s 1%: 0+17+0 ms clock, 0+3.5/71/79+0 ms cpu, 484->487->245 MB, 492 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 16 @3.375s 1%: 0.11+13+0 ms clock, 1.8+2.0/52/91+0 ms cpu, 482->484->244 MB, 491 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 17 @3.872s 1%: 0.99+17+1.0 ms clock, 15+0/67/82+16 ms cpu, 479->482->244 MB, 488 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 18 @4.376s 1%: 0+16+0 ms clock, 0+0.97/62/90+0 ms cpu, 481->484->244 MB, 490 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 19 @4.941s 1%: 0.71+13+0 ms clock, 11+2.0/51/86+0 ms cpu, 481->483->243 MB, 490 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 20 @5.518s 1%: 0.18+18+0 ms clock, 2.9+3.2/72/88+0 ms cpu, 480->483->244 MB, 488 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 21 @6.087s 1%: 0.22+18+0 ms clock, 3.5+3.8/70/86+0 ms cpu, 483->486->245 MB, 490 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 22 @6.587s 0%: 0.38+16+0.95 ms clock, 6.1+3.0/67/82+15 ms cpu, 483->487->245 MB, 491 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 23 @7.084s 1%: 0.74+24+0 ms clock, 11+1.0/97/63+0 ms cpu, 483->490->248 MB, 491 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 24 @7.598s 1%: 0.77+16+0 ms clock, 12+1.3/64/83+0 ms cpu, 486->490->245 MB, 497 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 25 @8.506s 1%: 0+39+0 ms clock, 0+32/135/224+0 ms cpu, 480->481->243 MB, 491 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 26 @9.335s 0%: 0.19+18+0 ms clock, 3.1+0/69/93+0 ms cpu, 476->478->244 MB, 487 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 27 @10.066s 0%: 0.46+23+0.63 ms clock, 7.4+5.1/90/106+10 ms cpu, 478->481->244 MB, 489 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 28 @10.815s 0%: 0.21+20+0.36 ms clock, 3.4+0/61/119+5.7 ms cpu, 479->481->243 MB, 490 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 29 @11.583s 0%: 0.57+18+0 ms clock, 9.1+1.0/67/98+0 ms cpu, 479->481->243 MB, 487 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 30 @12.188s 0%: 0.50+18+0.51 ms clock, 8.0+2.2/68/88+8.2 ms cpu, 481->484->245 MB, 487 MB goal, 0 MB stacks, 0 MB globals, 16 P
+#phase measure-end
+#phase forced-gc
+gc 31 @12.345s 0%: 0+10+0 ms clock, 0+0/42/119+0 ms cpu, 303->303->241 MB, 490 MB goal, 0 MB stacks, 0 MB globals, 16 P (forced)
+#phase forced-gc-end
+gomap          n=1000000   v=128   g=16  ops/s=26923058     p50=387ns p99=1519ns p999=31487ns max=16.81ms gc=17 gcCPU=1.81% heap=303MiB rss=510MiB offheap=0MiB populate=0.11s

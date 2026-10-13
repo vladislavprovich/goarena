@@ -1,0 +1,13 @@
+#phase populate-start
+gc 1 @0.246s 0%: 0+1.4+0.54 ms clock, 0+0/2.1/0+8.7 ms cpu, 15->19->15 MB, 16 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 2 @0.263s 0%: 0.50+3.6+0 ms clock, 8.0+0.69/11/15+0 ms cpu, 74->79->61 MB, 78 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 3 @0.346s 1%: 0+12+0 ms clock, 0+0/48/65+0 ms cpu, 282->299->237 MB, 310 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 4 @0.701s 3%: 0+83+0 ms clock, 0+3.9/326/586+0 ms cpu, 1082->1133->902 MB, 1187 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 5 @2.241s 5%: 0+573+0 ms clock, 0+2.0/2288/3639+0 ms cpu, 4123->4577->3737 MB, 4514 MB goal, 0 MB stacks, 0 MB globals, 16 P
+#phase populate-end
+#phase measure-start
+#phase measure-end
+#phase forced-gc
+gc 6 @21.259s 2%: 0+8132+0 ms clock, 0+0/8132/0+0 ms cpu, 10259->10259->4436 MB, 18688 MB goal, 0 MB stacks, 0 MB globals, 16 P (forced)
+#phase forced-gc-end
+gomap-gogc400  n=20000000  v=128   g=16  ops/s=20711887     p50=583ns p99=2783ns p999=26367ns max=1.07ms gc=0 gcCPU=0.00% heap=10257MiB rss=10483MiB offheap=0MiB populate=3.02s

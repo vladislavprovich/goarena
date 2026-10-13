@@ -1,0 +1,23 @@
+goos: windows
+goarch: amd64
+pkg: github.com/savokh/goarena/internal/cmem
+cpu: AMD Ryzen 7 7735HS with Radeon Graphics        
+BenchmarkGoCall-16             	854426998	         1.384 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoCall-16             	874280630	         1.373 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoCall-16             	870093578	         1.369 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoCall-16             	876230920	         1.366 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoCall-16             	875965477	         1.368 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCgoCall-16            	31262373	        37.16 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCgoCall-16            	32697992	        37.48 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCgoCall-16            	32569399	        37.66 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCgoCall-16            	31438713	        37.43 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCgoCall-16            	30750307	        38.13 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCgoCallParallel-16    	88120606	        14.29 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCgoCallParallel-16    	85713673	        14.46 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCgoCallParallel-16    	83316553	        14.24 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCgoCallParallel-16    	82847180	        14.20 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCgoCallParallel-16    	84766116	        14.44 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMallocFree128-16      	 8999280	       128.8 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMallocFree128-16      	 9565189	       131.6 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMallocFree128-16      	 9270574	       131.4 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMallocFree128-16      	

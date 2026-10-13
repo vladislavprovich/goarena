@@ -1,0 +1,16 @@
+#phase populate-start
+gc 1 @0.243s 0%: 0+0.67+0 ms clock, 0+2.9/2.5/1.7+0 ms cpu, 3->4->3 MB, 4 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 2 @0.245s 0%: 0+1.8+0 ms clock, 0+1.5/4.3/1.0+0 ms cpu, 6->9->9 MB, 7 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 3 @0.248s 1%: 0+4.4+0.50 ms clock, 0+11/10/2.5+8.0 ms cpu, 15->27->26 MB, 18 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 4 @0.257s 2%: 0.50+16+0 ms clock, 8.1+26/59/11+0 ms cpu, 45->77->76 MB, 53 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 5 @0.289s 7%: 0+46+0 ms clock, 0+100/182/51+0 ms cpu, 130->217->215 MB, 152 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 6 @0.380s 19%: 0+205+0.99 ms clock, 0+591/809/0+15 ms cpu, 367->724->719 MB, 431 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 7 @0.737s 31%: 0+1148+0 ms clock, 0+3158/4588/16+0 ms cpu, 1225->2875->2855 MB, 1438 MB goal, 0 MB stacks, 0 MB globals, 16 P
+#phase populate-end
+#phase measure-start
+gc 8 @2.541s 27%: 0+7382+0.85 ms clock, 0+4943/29522/2772+13 ms cpu, 4864->7125->7088 MB, 5712 MB goal, 0 MB stacks, 0 MB globals, 16 P
+#phase measure-end
+#phase forced-gc
+gc 9 @21.753s 14%: 0+2868+0 ms clock, 0+0/11472/34288+0 ms cpu, 10474->10474->5721 MB, 14177 MB goal, 0 MB stacks, 0 MB globals, 16 P (forced)
+#phase forced-gc-end
+syncmap        n=20000000  v=128   g=16  ops/s=11877817     p50=1135ns p99=2207ns p999=10623ns max=53.32ms gc=1 gcCPU=28.95% heap=10454MiB rss=10875MiB offheap=0MiB populate=3.43s

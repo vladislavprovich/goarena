@@ -1,0 +1,9 @@
+#phase populate-start
+#phase populate-end
+#phase measure-start
+#phase measure-end
+gc 1 @19.893s 0%: 0+0.51+0 ms clock, 0+0.51/2.0/2.0+0 ms cpu, 3->3->1 MB, 4 MB goal, 0 MB stacks, 0 MB globals, 16 P
+#phase forced-gc
+gc 2 @19.894s 0%: 0+0+0 ms clock, 0+0/0/0+0 ms cpu, 1->1->1 MB, 4 MB goal, 0 MB stacks, 0 MB globals, 16 P (forced)
+#phase forced-gc-end
+goarena        n=30000000  v=128   g=16  ops/s=26547979     p50=507ns p99=1015ns p999=4927ns max=10.13ms gc=0 gcCPU=0.00% heap=3MiB rss=5620MiB offheap=5696MiB populate=1.64s

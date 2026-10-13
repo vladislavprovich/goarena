@@ -1,0 +1,270 @@
+?   	github.com/savokh/goarena	[no test files]
+=== RUN   TestRefEncoding
+--- PASS: TestRefEncoding (0.00s)
+=== RUN   TestNewConfig
+--- PASS: TestNewConfig (0.00s)
+=== RUN   TestAllocAlignmentAndIsolation
+--- PASS: TestAllocAlignmentAndIsolation (0.00s)
+=== RUN   TestAllocErrors
+--- PASS: TestAllocErrors (0.00s)
+=== RUN   TestBoundsChecks
+--- PASS: TestBoundsChecks (0.00s)
+=== RUN   TestDedicatedChunks
+--- PASS: TestDedicatedChunks (0.00s)
+=== RUN   TestResetReusesChunks
+--- PASS: TestResetReusesChunks (0.00s)
+=== RUN   TestConcurrentAlloc
+--- PASS: TestConcurrentAlloc (0.00s)
+=== RUN   TestSizeClassTable
+    slab_test.go:36: 201 size classes: [16 24 32 40 48 56 64 72 80 88 96 104 112 120 128 136 144 152 160 168 176 184 192 200 208 216 224 232 240 248 256 264 272 280 288 296 304 312 320 328 336 344 352 360 368 376 384 392 400 408 416 424 432 440 448 456 464 472 480 488 496 504 512 528 544 560 576 592 608 624 640 656 672 688 704 720 736 752 768 784 800 816 832 848 864 880 896 912 928 944 960 976 992 1008 1024 1056 1088 1120 1152 1184 1216 1248 1280 1312 1344 1376 1408 1440 1472 1504 1536 1568 1600 1632 1664 1696 1728 1760 1792 1824 1856 1888 1920 1952 1984 2016 2048 2112 2176 2240 2304 2368 2432 2496 2560 2624 2688 2752 2816 2880 2944 3008 3072 3136 3200 3264 3328 3392 3456 3520 3584 3648 3712 3776 3840 3904 3968 4032 4096 4224 4352 4480 4608 4736 4864 4992 5120 5248 5376 5504 5632 5760 5888 6016 6144 6272 6400 6528 6656 6784 6912 7040 7168 7296 7424 7552 7680 7808 7936 8064 8192 10240 12800 16000 20000 25000 31256 39072 48840 61056 65536]
+--- PASS: TestSizeClassTable (0.00s)
+=== RUN   TestSlabReuseAndStats
+--- PASS: TestSlabReuseAndStats (0.00s)
+=== RUN   TestSlabLargeAndDirect
+--- PASS: TestSlabLargeAndDirect (0.00s)
+=== RUN   TestSlabSpanClampAndReset
+--- PASS: TestSlabSpanClampAndReset (0.00s)
+=== RUN   TestSlabOutOfMemory
+--- PASS: TestSlabOutOfMemory (0.00s)
+=== RUN   TestSlabRandomized
+--- PASS: TestSlabRandomized (0.04s)
+=== RUN   TestHybridClassTable
+--- PASS: TestHybridClassTable (0.00s)
+=== RUN   TestSlabRetainLargeAndDonate
+--- PASS: TestSlabRetainLargeAndDonate (0.00s)
+=== RUN   TestTryPointer
+--- PASS: TestTryPointer (0.00s)
+=== RUN   TestIsPointerFree
+--- PASS: TestIsPointerFree (0.00s)
+=== RUN   TestNewValueAndSlice
+--- PASS: TestNewValueAndSlice (0.00s)
+=== RUN   ExampleArena
+--- PASS: ExampleArena (0.00s)
+=== RUN   ExampleSlab
+--- PASS: ExampleSlab (0.00s)
+=== RUN   ExampleNewSlice
+--- PASS: ExampleNewSlice (0.00s)
+PASS
+ok  	github.com/savokh/goarena/arena	0.359s
+=== RUN   TestAppendKey
+--- PASS: TestAppendKey (0.00s)
+=== RUN   TestKeyChooser
+--- PASS: TestKeyChooser (0.01s)
+=== RUN   TestImplementations
+=== RUN   TestImplementations/goarena
+=== RUN   TestImplementations/goarena-budget
+=== RUN   TestImplementations/goarena-gogc400
+=== RUN   TestImplementations/goarena-paced
+=== RUN   TestImplementations/gobytes
+=== RUN   TestImplementations/gomap
+=== RUN   TestImplementations/gomap-gogc400
+=== RUN   TestImplementations/syncmap
+--- PASS: TestImplementations (0.02s)
+    --- PASS: TestImplementations/goarena (0.00s)
+    --- PASS: TestImplementations/goarena-budget (0.00s)
+    --- PASS: TestImplementations/goarena-gogc400 (0.00s)
+    --- PASS: TestImplementations/goarena-paced (0.00s)
+    --- PASS: TestImplementations/gobytes (0.00s)
+    --- PASS: TestImplementations/gomap (0.00s)
+    --- PASS: TestImplementations/gomap-gogc400 (0.00s)
+    --- PASS: TestImplementations/syncmap (0.00s)
+=== RUN   TestValidate
+--- PASS: TestValidate (0.00s)
+=== RUN   TestRunAndAggregate
+goarena        n=20000     v=64    g=4   ops/s=9696118      p50=181ns p99=1839ns p999=28415ns max=0.26ms gc=43 gcCPU=8.85% heap=1MiB rss=16MiB offheap=4MiB populate=0.00s
+goarena        n=20000     v=64    g=4   ops/s=11176213     p50=161ns p99=1615ns p999=29439ns max=0.28ms gc=46 gcCPU=9.92% heap=1MiB rss=27MiB offheap=4MiB populate=0.00s
+goarena-budget n=20000     v=64    g=4   ops/s=8412687      p50=161ns p99=3871ns p999=8319ns max=17.27ms gc=0 gcCPU=0.00% heap=168MiB rss=185MiB offheap=4MiB populate=0.00s
+goarena-budget n=20000     v=64    g=4   ops/s=8727871      p50=221ns p99=855ns p999=3359ns max=13.07ms gc=0 gcCPU=0.00% heap=144MiB rss=187MiB offheap=4MiB populate=0.00s
+goarena-gogc400 n=20000     v=64    g=4   ops/s=2375983      p50=249ns p99=983ns p999=4671ns max=15.17ms gc=3 gcCPU=5.65% heap=12MiB rss=185MiB offheap=4MiB populate=0.01s
+goarena-gogc400 n=20000     v=64    g=4   ops/s=3225572      p50=241ns p99=967ns p999=4927ns max=37.72ms gc=1 gcCPU=38.52% heap=27MiB rss=182MiB offheap=4MiB populate=0.01s
+goarena-paced  n=20000     v=64    g=4   ops/s=3431608      p50=249ns p99=967ns p999=4799ns max=5.62ms gc=2 gcCPU=3.71% heap=40MiB rss=179MiB offheap=4MiB populate=0.01s
+goarena-paced  n=20000     v=64    g=4   ops/s=3122156      p50=241ns p99=887ns p999=4415ns max=0.20ms gc=0 gcCPU=0.00% heap=47MiB rss=177MiB offheap=4MiB populate=0.01s
+gobytes        n=20000     v=64    g=4   ops/s=3051866      p50=283ns p99=4543ns p999=76799ns max=12.39ms gc=2 gcCPU=6.95% heap=42MiB rss=166MiB offheap=0MiB populate=0.01s
+gobytes        n=20000     v=64    g=4   ops/s=3030252      p50=267ns p99=3487ns p999=61951ns max=20.90ms gc=2 gcCPU=0.63% heap=33MiB rss=161MiB offheap=0MiB populate=0.01s
+gomap          n=20000     v=64    g=4   ops/s=1386306      p50=331ns p99=3231ns p999=137215ns max=11.55ms gc=1 gcCPU=14.01% heap=22MiB rss=156MiB offheap=0MiB populate=0.01s
+gomap          n=20000     v=64    g=4   ops/s=2568445      p50=323ns p99=5695ns p999=113663ns max=5.28ms gc=1 gcCPU=1.75% heap=35MiB rss=146MiB offheap=0MiB populate=0.01s
+gomap-gogc400  n=20000     v=64    g=4   ops/s=7131638      p50=307ns p99=4415ns p999=25855ns max=0.28ms gc=5 gcCPU=1.71% heap=7MiB rss=136MiB offheap=0MiB populate=0.00s
+gomap-gogc400  n=20000     v=64    g=4   ops/s=7656838      p50=291ns p99=4287ns p999=23295ns max=0.27ms gc=4 gcCPU=1.26% heap=21MiB rss=128MiB offheap=0MiB populate=0.00s
+syncmap        n=20000     v=64    g=4   ops/s=6782304      p50=435ns p99=1647ns p999=11647ns max=0.71ms gc=3 gcCPU=5.69% heap=16MiB rss=120MiB offheap=0MiB populate=0.00s
+syncmap        n=20000     v=64    g=4   ops/s=8585350      p50=339ns p99=1359ns p999=6207ns max=0.82ms gc=4 gcCPU=8.28% heap=26MiB rss=113MiB offheap=0MiB populate=0.00s
+goarena        n=5000      v=128   g=16  ops/s=36554644     p50=120ns p99=807ns p999=26367ns max=0.93ms gc=0 gcCPU=0.00% heap=5MiB rss=112MiB offheap=1MiB populate=0.00s
+aggregated 16 runs into 8 configurations
+--- PASS: TestRunAndAggregate (2.56s)
+=== RUN   TestMatrixDryRun
+--- PASS: TestMatrixDryRun (0.04s)
+=== RUN   TestParseTrace
+--- PASS: TestParseTrace (0.00s)
+=== RUN   TestProfileFlag
+--- PASS: TestProfileFlag (0.21s)
+PASS
+ok  	github.com/savokh/goarena/cmd/goarena-bench	3.242s
+=== RUN   TestKVRoutes
+=== RUN   TestKVRoutes/goarena
+=== RUN   TestKVRoutes/gomap
+--- PASS: TestKVRoutes (0.38s)
+    --- PASS: TestKVRoutes/goarena (0.35s)
+    --- PASS: TestKVRoutes/gomap (0.03s)
+=== RUN   TestDashboardAndHealth
+--- PASS: TestDashboardAndHealth (0.03s)
+=== RUN   TestParseFlags
+flag provided but not defined: -bogus
+Usage of httpcache:
+  -addr string
+    	listen address (default "127.0.0.1:8080")
+  -backend string
+    	storage backend: goarena or gomap (default "goarena")
+  -chunk int
+    	goarena chunk size in MiB (default 64)
+  -http-rate int
+    	self-load HTTP requests per second (0 = none) (default 200)
+  -keys int
+    	self-load key space (default 1000000)
+  -reads float
+    	self-load read share (default 0.9)
+  -selfload
+    	generate traffic in-process
+  -shards int
+    	number of shards (default 256)
+  -value int
+    	self-load value size in bytes (default 256)
+  -workers int
+    	self-load worker goroutines (default 4)
+--- PASS: TestParseFlags (0.00s)
+=== RUN   TestServeWithSelfLoad
+2026/10/13 22:10:56 httpcache (goarena backend) listening on http://127.0.0.1:64050/dashboard
+2026/10/13 22:10:56 selfload: populated 5000 keys in 2ms
+--- PASS: TestServeWithSelfLoad (1.53s)
+PASS
+ok  	github.com/savokh/goarena/examples/httpcache	3.239s
+=== RUN   TestPercent
+--- PASS: TestPercent (0.00s)
+=== RUN   TestGoLimit
+--- PASS: TestGoLimit (0.00s)
+=== RUN   TestPacerAdjustsAndRestores
+--- PASS: TestPacerAdjustsAndRestores (0.00s)
+=== RUN   TestPacerInheritsSettings
+--- PASS: TestPacerInheritsSettings (0.01s)
+=== RUN   TestDefaultPacerRefcount
+--- PASS: TestDefaultPacerRefcount (0.00s)
+=== RUN   TestPacingReducesGCFrequency
+    gcpace_test.go:190: GC cycles: plain 106, paced 1
+--- PASS: TestPacingReducesGCFrequency (0.10s)
+=== RUN   ExampleStart
+--- PASS: ExampleStart (0.00s)
+PASS
+ok  	github.com/savokh/goarena/gcpace	0.461s
+=== RUN   TestSnapshotAndDelta
+    gcstats_test.go:51: cycles=38 gcCPU=0.0713 busyShare=0.434 maxEvent=1.31072ms cycleMax=1.2148ms total=3.9478ms rss=18 MiB
+--- PASS: TestSnapshotAndDelta (0.05s)
+=== RUN   TestProcessInfo
+--- PASS: TestProcessInfo (0.05s)
+=== RUN   TestBucketUpper
+--- PASS: TestBucketUpper (0.00s)
+=== RUN   TestDeltaWithoutHistograms
+--- PASS: TestDeltaWithoutHistograms (0.00s)
+PASS
+ok  	github.com/savokh/goarena/gcstats	0.468s
+=== RUN   TestMallocFreeAccounting
+--- PASS: TestMallocFreeAccounting (0.00s)
+=== RUN   TestCallocZeroes
+--- PASS: TestCallocZeroes (0.00s)
+=== RUN   TestMallocFailureReturnsNil
+--- PASS: TestMallocFailureReturnsNil (0.00s)
+=== RUN   TestEdgeCases
+--- PASS: TestEdgeCases (0.00s)
+=== RUN   TestInvalidFreePanics
+--- PASS: TestInvalidFreePanics (0.00s)
+=== RUN   TestConcurrentCounters
+--- PASS: TestConcurrentCounters (0.00s)
+PASS
+ok  	github.com/savokh/goarena/internal/cmem	0.226s
+=== RUN   TestBucketBoundsRoundTrip
+--- PASS: TestBucketBoundsRoundTrip (0.00s)
+=== RUN   TestQuantileAccuracy
+--- PASS: TestQuantileAccuracy (0.02s)
+=== RUN   TestMergeAndReset
+--- PASS: TestMergeAndReset (0.00s)
+=== RUN   TestQuantileEdges
+--- PASS: TestQuantileEdges (0.00s)
+PASS
+ok  	github.com/savokh/goarena/internal/latency	0.354s
+=== RUN   TestTicksMonotonic
+--- PASS: TestTicksMonotonic (0.00s)
+=== RUN   TestCalibration
+    tsc_test.go:37: ns/tick=0.3137 available=true
+--- PASS: TestCalibration (0.25s)
+PASS
+ok  	github.com/savokh/goarena/internal/tsc	0.592s
+=== RUN   TestNoLeakAfterClose
+    leak_test.go:45: C blocks while open: 57, live after Close: 0, cgo calls: 114
+--- PASS: TestNoLeakAfterClose (0.04s)
+=== RUN   TestFinalizerSafetyNet
+--- PASS: TestFinalizerSafetyNet (0.01s)
+=== RUN   TestOffHeapIsInvisibleToGC
+    leak_test.go:102: entries=500000 off-heap=128 MiB, Go heap growth=16 KiB
+--- PASS: TestOffHeapIsInvisibleToGC (0.25s)
+=== RUN   TestOptimisticReadsNeverTorn
+    optimistic_test.go:141: reads=70961138 entries=7762 slots=16384 donated=254 KiB
+--- PASS: TestOptimisticReadsNeverTorn (1.51s)
+=== RUN   TestHotKeyReaders
+--- PASS: TestHotKeyReaders (0.30s)
+=== RUN   TestReadOptimisticRejectsGarbage
+--- PASS: TestReadOptimisticRejectsGarbage (0.00s)
+=== RUN   TestShardLayout
+--- PASS: TestShardLayout (0.00s)
+=== RUN   TestNewConfig
+--- PASS: TestNewConfig (0.00s)
+=== RUN   TestBasicOperations
+--- PASS: TestBasicOperations (0.00s)
+=== RUN   TestGetIntoViewStrings
+--- PASS: TestGetIntoViewStrings (0.00s)
+=== RUN   TestTTL
+--- PASS: TestTTL (0.00s)
+=== RUN   TestLimits
+--- PASS: TestLimits (0.00s)
+=== RUN   TestLargeValues
+--- PASS: TestLargeValues (0.00s)
+=== RUN   TestRehashAndTombstones
+--- PASS: TestRehashAndTombstones (0.02s)
+=== RUN   TestIndexRemoveBackwardSweep
+--- PASS: TestIndexRemoveBackwardSweep (0.00s)
+=== RUN   TestRangeStops
+--- PASS: TestRangeStops (0.00s)
+=== RUN   TestCloseSemantics
+--- PASS: TestCloseSemantics (0.00s)
+=== RUN   TestStatsMemoryAccounting
+    store_test.go:415: entries=20000 slab=3200000 frag=0.019 arena=5242880 index=524288 probe=0.785/43
+--- PASS: TestStatsMemoryAccounting (0.01s)
+=== RUN   TestGoMemoryBudget
+--- PASS: TestGoMemoryBudget (0.00s)
+=== RUN   TestGCPacing
+--- PASS: TestGCPacing (0.01s)
+=== RUN   TestConcurrentStress
+    stress_test.go:98: workers=16 ops=20518630 entries=1435 slots=4096 load=0.41 tombs=255 frag=0.012
+--- PASS: TestConcurrentStress (2.01s)
+=== RUN   TestConcurrentClose
+--- PASS: TestConcurrentClose (0.10s)
+=== RUN   FuzzStore
+=== RUN   FuzzStore/seed#0
+=== RUN   FuzzStore/seed#1
+=== RUN   FuzzStore/seed#2
+=== RUN   FuzzStore/seed#3
+=== RUN   FuzzStore/seed#4
+--- PASS: FuzzStore (0.00s)
+    --- PASS: FuzzStore/seed#0 (0.00s)
+    --- PASS: FuzzStore/seed#1 (0.00s)
+    --- PASS: FuzzStore/seed#2 (0.00s)
+    --- PASS: FuzzStore/seed#3 (0.00s)
+    --- PASS: FuzzStore/seed#4 (0.00s)
+=== RUN   Example
+--- PASS: Example (0.00s)
+=== RUN   ExampleStore_View
+--- PASS: ExampleStore_View (0.00s)
+=== RUN   ExampleStore_GetInto
+--- PASS: ExampleStore_GetInto (0.00s)
+=== RUN   ExampleStore_SetWithTTL
+--- PASS: ExampleStore_SetWithTTL (0.00s)
+=== RUN   ExampleStore_Stats
+--- PASS: ExampleStore_Stats (0.00s)
+PASS
+ok  	github.com/savokh/goarena/store	4.568s

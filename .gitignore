@@ -1,0 +1,20 @@
+# build output
+/bin/
+*.exe
+*.test
+*.prof
+*.out
+!/results/coverage.out
+
+# fuzzing corpus generated locally (seed corpus lives in the test file)
+testdata/fuzz/
+
+# editors / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# temporary benchmark files
+*.json.tmp

@@ -1,0 +1,238 @@
+# goarena-bench matrix -exp E1r,E4,E9 -out results/raw -repeats 3 -duration 15s -warmup 3s -short 10s
+21:34:16 matrix: 69 runs in results/raw
+gomap          n=10000000  v=128   g=16  ops/s=23771312     p50=499ns p99=1967ns p999=18687ns max=31.22ms gc=2 gcCPU=5.56% heap=3962MiB rss=4096MiB offheap=0MiB populate=1.31s
+21:34:37 [1/69] E1r_gomap_n10000000_v128_g16_c64_uniform_r90_rep1.json ok in 20.2s (eta 22m56s)
+gomap-gogc400  n=10000000  v=128   g=16  ops/s=21258478     p50=535ns p99=2783ns p999=30463ns max=32.08ms gc=1 gcCPU=6.29% heap=6711MiB rss=6883MiB offheap=0MiB populate=1.12s
+21:34:57 [2/69] E1r_gomap-gogc400_n10000000_v128_g16_c64_uniform_r90_rep1.json ok in 20.4s (eta 22m41s)
+syncmap        n=10000000  v=128   g=16  ops/s=11228978     p50=1015ns p99=2399ns p999=21759ns max=131.58ms gc=1 gcCPU=12.70% heap=5861MiB rss=6107MiB offheap=0MiB populate=2.06s
+21:35:20 [3/69] E1r_syncmap_n10000000_v128_g16_c64_uniform_r90_rep1.json ok in 22.6s (eta 23m11s)
+gobytes        n=10000000  v=128   g=16  ops/s=26888337     p50=451ns p99=1583ns p999=19199ns max=1.39ms gc=0 gcCPU=0.00% heap=1910MiB rss=1909MiB offheap=0MiB populate=0.61s
+21:35:39 [4/69] E1r_gobytes_n10000000_v128_g16_c64_uniform_r90_rep1.json ok in 19.0s (eta 22m17s)
+goarena        n=10000000  v=128   g=16  ops/s=33124171     p50=371ns p99=903ns p999=4799ns max=20.42ms gc=0 gcCPU=0.00% heap=4MiB rss=1796MiB offheap=1856MiB populate=0.56s
+21:35:58 [5/69] E1r_goarena_n10000000_v128_g16_c64_uniform_r90_rep1.json ok in 19.1s (eta 21m37s)
+gomap          n=10000000  v=128   g=16  ops/s=23016208     p50=499ns p99=1903ns p999=17663ns max=45.92ms gc=4 gcCPU=6.14% heap=2446MiB rss=3958MiB offheap=0MiB populate=1.23s
+21:36:18 [6/69] E1r_gomap_n10000000_v128_g16_c64_uniform_r90_rep2.json ok in 20.2s (eta 21m16s)
+gomap-gogc400  n=10000000  v=128   g=16  ops/s=25539454     p50=499ns p99=2207ns p999=10879ns max=0.53ms gc=0 gcCPU=0.00% heap=7937MiB rss=8142MiB offheap=0MiB populate=1.10s
+21:36:38 [7/69] E1r_gomap-gogc400_n10000000_v128_g16_c64_uniform_r90_rep2.json ok in 20.5s (eta 20m58s)
+syncmap        n=10000000  v=128   g=16  ops/s=11041167     p50=1015ns p99=2463ns p999=23807ns max=95.78ms gc=1 gcCPU=13.21% heap=5857MiB rss=6126MiB offheap=0MiB populate=1.66s
+21:37:00 [8/69] E1r_syncmap_n10000000_v128_g16_c64_uniform_r90_rep2.json ok in 22.0s (eta 20m51s)
+gobytes        n=10000000  v=128   g=16  ops/s=24607775     p50=459ns p99=1807ns p999=28415ns max=1.90ms gc=0 gcCPU=0.00% heap=1916MiB rss=1914MiB offheap=0MiB populate=0.60s
+21:37:19 [9/69] E1r_gobytes_n10000000_v128_g16_c64_uniform_r90_rep2.json ok in 19.0s (eta 20m20s)
+goarena        n=10000000  v=128   g=16  ops/s=33622731     p50=371ns p99=903ns p999=3743ns max=16.03ms gc=0 gcCPU=0.00% heap=4MiB rss=1796MiB offheap=1856MiB populate=0.52s
+21:37:39 [10/69] E1r_goarena_n10000000_v128_g16_c64_uniform_r90_rep2.json ok in 19.1s (eta 19m53s)
+gomap          n=10000000  v=128   g=16  ops/s=23279040     p50=519ns p99=1935ns p999=17151ns max=28.80ms gc=2 gcCPU=5.37% heap=3988MiB rss=4095MiB offheap=0MiB populate=1.36s
+21:37:59 [11/69] E1r_gomap_n10000000_v128_g16_c64_uniform_r90_rep3.json ok in 20.5s (eta 19m34s)
+gomap-gogc400  n=10000000  v=128   g=16  ops/s=22485411     p50=519ns p99=2399ns p999=28927ns max=14.16ms gc=1 gcCPU=5.34% heap=6998MiB rss=7178MiB offheap=0MiB populate=1.11s
+21:38:19 [12/69] E1r_gomap-gogc400_n10000000_v128_g16_c64_uniform_r90_rep3.json ok in 20.5s (eta 19m15s)
+syncmap        n=10000000  v=128   g=16  ops/s=10509211     p50=1071ns p99=2783ns p999=19199ns max=131.16ms gc=1 gcCPU=21.25% heap=7103MiB rss=7378MiB offheap=0MiB populate=1.55s
+21:38:44 [13/69] E1r_syncmap_n10000000_v128_g16_c64_uniform_r90_rep3.json ok in 24.4s (eta 19m12s)
+gobytes        n=10000000  v=128   g=16  ops/s=24658497     p50=443ns p99=1615ns p999=38399ns max=8.30ms gc=0 gcCPU=0.00% heap=1914MiB rss=1911MiB offheap=0MiB populate=0.59s
+21:39:03 [14/69] E1r_gobytes_n10000000_v128_g16_c64_uniform_r90_rep3.json ok in 19.0s (eta 18m46s)
+goarena        n=10000000  v=128   g=16  ops/s=30368679     p50=379ns p99=903ns p999=4543ns max=23.61ms gc=0 gcCPU=0.00% heap=4MiB rss=1796MiB offheap=1856MiB populate=0.66s
+21:39:22 [15/69] E1r_goarena_n10000000_v128_g16_c64_uniform_r90_rep3.json ok in 19.2s (eta 18m21s)
+gomap          n=2000000   v=64    g=16  ops/s=30950204     p50=403ns p99=1519ns p999=11903ns max=9.02ms gc=8 gcCPU=1.88% heap=493MiB rss=749MiB offheap=0MiB populate=0.21s
+21:39:35 [16/69] E4_gomap_n2000000_v64_g16_c64_uniform_r90_rep1.json ok in 12.6s (eta 17m34s)
+gobytes        n=2000000   v=64    g=16  ops/s=28958049     p50=363ns p99=1391ns p999=33279ns max=5.23ms gc=0 gcCPU=0.00% heap=301MiB rss=305MiB offheap=0MiB populate=0.10s
+21:39:47 [17/69] E4_gobytes_n2000000_v64_g16_c64_uniform_r90_rep1.json ok in 12.4s (eta 16m51s)
+goarena        n=2000000   v=64    g=16  ops/s=37849712     p50=323ns p99=727ns p999=2399ns max=18.83ms gc=0 gcCPU=0.00% heap=4MiB rss=267MiB offheap=256MiB populate=0.07s
+21:39:59 [18/69] E4_goarena_n2000000_v64_g16_c64_uniform_r90_rep1.json ok in 12.4s (eta 16m12s)
+gomap          n=2000000   v=256   g=16  ops/s=25883684     p50=451ns p99=1839ns p999=19199ns max=14.98ms gc=10 gcCPU=3.53% heap=1437MiB rss=1502MiB offheap=0MiB populate=0.33s
+21:40:12 [19/69] E4_gomap_n2000000_v256_g16_c64_uniform_r90_rep1.json ok in 12.8s (eta 15m36s)
+gobytes        n=2000000   v=256   g=16  ops/s=28664324     p50=411ns p99=1455ns p999=20223ns max=4.27ms gc=0 gcCPU=0.00% heap=685MiB rss=670MiB offheap=0MiB populate=0.15s
+21:40:25 [20/69] E4_gobytes_n2000000_v256_g16_c64_uniform_r90_rep1.json ok in 12.5s (eta 15m2s)
+goarena        n=2000000   v=256   g=16  ops/s=30166838     p50=403ns p99=1071ns p999=5311ns max=25.17ms gc=0 gcCPU=0.00% heap=4MiB rss=627MiB offheap=640MiB populate=0.13s
+21:40:37 [21/69] E4_goarena_n2000000_v256_g16_c64_uniform_r90_rep1.json ok in 12.5s (eta 14m30s)
+gomap          n=2000000   v=1024  g=16  ops/s=16514876     p50=727ns p99=2399ns p999=29951ns max=16.80ms gc=8 gcCPU=4.51% heap=3532MiB rss=4604MiB offheap=0MiB populate=0.65s
+21:40:51 [22/69] E4_gomap_n2000000_v1024_g16_c64_uniform_r90_rep1.json ok in 13.4s (eta 14m2s)
+gobytes        n=2000000   v=1024  g=16  ops/s=17319018     p50=727ns p99=2143ns p999=24319ns max=1.43ms gc=0 gcCPU=0.00% heap=2133MiB rss=2122MiB offheap=0MiB populate=0.38s
+21:41:03 [23/69] E4_gobytes_n2000000_v1024_g16_c64_uniform_r90_rep1.json ok in 12.8s (eta 13m34s)
+goarena        n=2000000   v=1024  g=16  ops/s=18554126     p50=695ns p99=1519ns p999=6591ns max=32.61ms gc=0 gcCPU=0.00% heap=4MiB rss=2093MiB offheap=2112MiB populate=0.36s
+21:41:16 [24/69] E4_goarena_n2000000_v1024_g16_c64_uniform_r90_rep1.json ok in 12.8s (eta 13m7s)
+gomap          n=2000000   v=4096  g=16  ops/s=6014998      p50=1647ns p99=10879ns p999=182271ns max=24.20ms gc=3 gcCPU=2.90% heap=13742MiB rss=16011MiB offheap=0MiB populate=1.87s
+21:41:33 [25/69] E4_gomap_n2000000_v4096_g16_c64_uniform_r90_rep1.json ok in 16.9s (eta 12m49s)
+gobytes        n=2000000   v=4096  g=16  ops/s=6321531      p50=1775ns p99=12415ns p999=133119ns max=3.81ms gc=0 gcCPU=0.00% heap=8043MiB rss=8070MiB offheap=0MiB populate=1.46s
+21:41:48 [26/69] E4_gobytes_n2000000_v4096_g16_c64_uniform_r90_rep1.json ok in 14.5s (eta 12m26s)
+goarena        n=2000000   v=4096  g=16  ops/s=6754533      p50=1743ns p99=3231ns p999=26367ns max=25.85ms gc=0 gcCPU=0.00% heap=4MiB rss=8413MiB offheap=8448MiB populate=1.64s
+21:42:02 [27/69] E4_goarena_n2000000_v4096_g16_c64_uniform_r90_rep1.json ok in 14.9s (eta 12m5s)
+gomap          n=5000000   v=128   g=16  ops/s=4777484      p50=1199ns p99=13951ns p999=389119ns max=68.33ms gc=52 gcCPU=36.95% heap=3037MiB rss=3264MiB offheap=0MiB populate=0.60s
+21:42:22 [28/69] E9_gomap_n5000000_v128_g16_c64_uniform_r90_rep1.json ok in 19.3s (eta 11m51s)
+gomap-gogc400  n=5000000   v=128   g=16  ops/s=7278350      p50=1199ns p99=12415ns p999=161791ns max=38.57ms gc=12 gcCPU=13.73% heap=14264MiB rss=16014MiB offheap=0MiB populate=0.53s
+21:42:43 [29/69] E9_gomap-gogc400_n5000000_v128_g16_c64_uniform_r90_rep1.json ok in 20.9s (eta 11m38s)
+syncmap        n=5000000   v=128   g=16  ops/s=1842859      p50=1743ns p99=25343ns p999=958463ns max=419.88ms gc=14 gcCPU=58.79% heap=4636MiB rss=10413MiB offheap=0MiB populate=0.59s
+21:43:04 [30/69] E9_syncmap_n5000000_v128_g16_c64_uniform_r90_rep1.json ok in 21.0s (eta 11m26s)
+gobytes        n=5000000   v=128   g=16  ops/s=9339981      p50=1103ns p99=4671ns p999=107519ns max=5.28ms gc=165 gcCPU=0.60% heap=1864MiB rss=1997MiB offheap=0MiB populate=0.37s
+21:43:23 [31/69] E9_gobytes_n5000000_v128_g16_c64_uniform_r90_rep1.json ok in 18.8s (eta 11m10s)
+goarena        n=5000000   v=128   g=16  ops/s=5110798      p50=887ns p99=22271ns p999=380927ns max=11.48ms gc=4665 gcCPU=8.25% heap=35MiB rss=953MiB offheap=960MiB populate=0.26s
+21:43:41 [32/69] E9_goarena_n5000000_v128_g16_c64_uniform_r90_rep1.json ok in 18.7s (eta 10m53s)
+goarena-gogc400 n=5000000   v=128   g=16  ops/s=7668168      p50=1039ns p99=9343ns p999=198655ns max=20.80ms gc=1488 gcCPU=3.45% heap=79MiB rss=1332MiB offheap=960MiB populate=0.30s
+21:44:00 [33/69] E9_goarena-gogc400_n5000000_v128_g16_c64_uniform_r90_rep1.json ok in 18.8s (eta 10m37s)
+goarena-paced  n=5000000   v=128   g=16  ops/s=9823668      p50=1071ns p99=4063ns p999=72703ns max=34.00ms gc=166 gcCPU=0.51% heap=672MiB rss=1998MiB offheap=960MiB populate=0.24s
+21:44:19 [34/69] E9_goarena-paced_n5000000_v128_g16_c64_uniform_r90_rep1.json ok in 18.8s (eta 10m20s)
+gomap          n=10000000  v=128   g=16  ops/s=3878954      p50=1263ns p99=12927ns p999=503807ns max=53.05ms gc=21 gcCPU=42.62% heap=5760MiB rss=6458MiB offheap=0MiB populate=1.27s
+21:44:40 [35/69] E9_gomap_n10000000_v128_g16_c64_uniform_r90_rep1.json ok in 20.7s (eta 10m5s)
+gomap-gogc400  n=10000000  v=128   g=16  ops/s=1077133      p50=1199ns p99=63999ns p999=2015231ns max=144.31ms gc=1 gcCPU=5.83% heap=20318MiB rss=9472MiB offheap=0MiB populate=2.23s
+21:45:03 [36/69] E9_gomap-gogc400_n10000000_v128_g16_c64_uniform_r90_rep1.json ok in 23.6s (eta 9m53s)
+syncmap        n=10000000  v=128   g=16  ops/s=1946828      p50=1839ns p99=27903ns p999=1023999ns max=998.60ms gc=7 gcCPU=57.51% heap=7835MiB rss=14704MiB offheap=0MiB populate=1.92s
+21:45:27 [37/69] E9_syncmap_n10000000_v128_g16_c64_uniform_r90_rep1.json ok in 23.6s (eta 9m40s)
+gobytes        n=10000000  v=128   g=16  ops/s=10042121     p50=1167ns p99=3871ns p999=72703ns max=1.80ms gc=89 gcCPU=0.45% heap=3406MiB rss=3850MiB offheap=0MiB populate=0.60s
+21:45:46 [38/69] E9_gobytes_n10000000_v128_g16_c64_uniform_r90_rep1.json ok in 19.3s (eta 9m23s)
+goarena        n=10000000  v=128   g=16  ops/s=5107652      p50=887ns p99=22271ns p999=372735ns max=11.31ms gc=4905 gcCPU=8.42% heap=27MiB rss=1830MiB offheap=1856MiB populate=0.52s
+21:46:05 [39/69] E9_goarena_n10000000_v128_g16_c64_uniform_r90_rep1.json ok in 19.1s (eta 9m5s)
+goarena-gogc400 n=10000000  v=128   g=16  ops/s=7351498      p50=1039ns p99=10879ns p999=202751ns max=25.46ms gc=1164 gcCPU=2.89% heap=76MiB rss=2250MiB offheap=1856MiB populate=0.48s
+21:46:24 [40/69] E9_goarena-gogc400_n10000000_v128_g16_c64_uniform_r90_rep1.json ok in 19.1s (eta 8m48s)
+goarena-paced  n=10000000  v=128   g=16  ops/s=9614833      p50=1103ns p99=3295ns p999=58879ns max=28.02ms gc=83 gcCPU=0.45% heap=1663MiB rss=3874MiB offheap=1856MiB populate=0.50s
+21:46:43 [41/69] E9_goarena-paced_n10000000_v128_g16_c64_uniform_r90_rep1.json ok in 19.3s (eta 8m30s)
+gomap          n=5000000   v=128   g=16  ops/s=4991980      p50=1199ns p99=15231ns p999=380927ns max=27.49ms gc=52 gcCPU=36.02% heap=3066MiB rss=3285MiB offheap=0MiB populate=0.70s
+21:47:03 [42/69] E9_gomap_n5000000_v128_g16_c64_uniform_r90_rep2.json ok in 19.5s (eta 8m13s)
+gomap-gogc400  n=5000000   v=128   g=16  ops/s=6482272      p50=1199ns p99=15231ns p999=190463ns max=42.20ms gc=14 gcCPU=15.69% heap=12905MiB rss=16247MiB offheap=0MiB populate=0.57s
+21:47:24 [43/69] E9_gomap-gogc400_n5000000_v128_g16_c64_uniform_r90_rep2.json ok in 21.0s (eta 7m56s)
+syncmap        n=5000000   v=128   g=16  ops/s=2195052      p50=1679ns p99=27391ns p999=892927ns max=396.30ms gc=15 gcCPU=57.59% heap=3808MiB rss=11817MiB offheap=0MiB populate=0.71s
+21:47:45 [44/69] E9_syncmap_n5000000_v128_g16_c64_uniform_r90_rep2.json ok in 20.8s (eta 7m39s)
+gobytes        n=5000000   v=128   g=16  ops/s=9728494      p50=1103ns p99=4415ns p999=95231ns max=5.89ms gc=171 gcCPU=0.67% heap=1812MiB rss=1957MiB offheap=0MiB populate=0.36s
+21:48:04 [45/69] E9_gobytes_n5000000_v128_g16_c64_uniform_r90_rep2.json ok in 18.8s (eta 7m21s)
+goarena        n=5000000   v=128   g=16  ops/s=4913649      p50=919ns p99=23295ns p999=389119ns max=10.73ms gc=4376 gcCPU=8.22% heap=14MiB rss=940MiB offheap=960MiB populate=0.26s
+21:48:22 [46/69] E9_goarena_n5000000_v128_g16_c64_uniform_r90_rep2.json ok in 18.7s (eta 7m3s)
+goarena-gogc400 n=5000000   v=128   g=16  ops/s=7182693      p50=1039ns p99=10367ns p999=186367ns max=20.95ms gc=817 gcCPU=2.68% heap=167MiB rss=1419MiB offheap=960MiB populate=0.25s
+21:48:41 [47/69] E9_goarena-gogc400_n5000000_v128_g16_c64_uniform_r90_rep2.json ok in 18.7s (eta 6m45s)
+goarena-paced  n=5000000   v=128   g=16  ops/s=9771560      p50=1039ns p99=4063ns p999=78847ns max=20.35ms gc=164 gcCPU=0.29% heap=807MiB rss=2056MiB offheap=960MiB populate=0.28s
+21:49:00 [48/69] E9_goarena-paced_n5000000_v128_g16_c64_uniform_r90_rep2.json ok in 18.9s (eta 6m27s)
+gomap          n=10000000  v=128   g=16  ops/s=4004915      p50=1295ns p99=12671ns p999=495615ns max=49.27ms gc=22 gcCPU=41.73% heap=5401MiB rss=6476MiB offheap=0MiB populate=1.76s
+21:49:21 [49/69] E9_gomap_n10000000_v128_g16_c64_uniform_r90_rep2.json ok in 21.4s (eta 6m9s)
+gomap-gogc400  n=10000000  v=128   g=16  ops/s=3130990      p50=1263ns p99=12927ns p999=339967ns max=51.32ms gc=4 gcCPU=13.25% heap=18712MiB rss=14911MiB offheap=0MiB populate=1.13s
+21:49:44 [50/69] E9_gomap-gogc400_n10000000_v128_g16_c64_uniform_r90_rep2.json ok in 22.3s (eta 5m52s)
+syncmap        n=10000000  v=128   g=16  ops/s=591070       p50=1711ns p99=174079ns p999=2850815ns max=1700.14ms gc=1 gcCPU=32.85% heap=21392MiB rss=1558MiB offheap=0MiB populate=1.76s
+21:50:10 [51/69] E9_syncmap_n10000000_v128_g16_c64_uniform_r90_rep2.json ok in 26.2s (eta 5m37s)
+gobytes        n=10000000  v=128   g=16  ops/s=9677030      p50=1167ns p99=4063ns p999=89087ns max=1.78ms gc=87 gcCPU=0.39% heap=3668MiB rss=3843MiB offheap=0MiB populate=0.68s
+21:50:29 [52/69] E9_gobytes_n10000000_v128_g16_c64_uniform_r90_rep2.json ok in 19.3s (eta 5m18s)
+goarena        n=10000000  v=128   g=16  ops/s=5374602      p50=919ns p99=21759ns p999=315391ns max=16.67ms gc=5083 gcCPU=8.12% heap=19MiB rss=1840MiB offheap=1856MiB populate=0.53s
+21:50:48 [53/69] E9_goarena_n10000000_v128_g16_c64_uniform_r90_rep2.json ok in 19.0s (eta 4m59s)
+goarena-gogc400 n=10000000  v=128   g=16  ops/s=7827502      p50=1039ns p99=10623ns p999=174079ns max=16.86ms gc=1400 gcCPU=3.00% heap=69MiB rss=2271MiB offheap=1856MiB populate=0.51s
+21:51:07 [54/69] E9_goarena-gogc400_n10000000_v128_g16_c64_uniform_r90_rep2.json ok in 19.1s (eta 4m41s)
+goarena-paced  n=10000000  v=128   g=16  ops/s=9638027      p50=1103ns p99=3167ns p999=60927ns max=82.80ms gc=83 gcCPU=0.13% heap=1442MiB rss=3839MiB offheap=1856MiB populate=0.52s
+21:51:27 [55/69] E9_goarena-paced_n10000000_v128_g16_c64_uniform_r90_rep2.json ok in 19.3s (eta 4m22s)
+gomap          n=5000000   v=128   g=16  ops/s=5165369      p50=1167ns p99=15743ns p999=364543ns max=29.24ms gc=54 gcCPU=35.19% heap=3150MiB rss=3334MiB offheap=0MiB populate=0.62s
+21:51:46 [56/69] E9_gomap_n5000000_v128_g16_c64_uniform_r90_rep3.json ok in 19.4s (eta 4m4s)
+gomap-gogc400  n=5000000   v=128   g=16  ops/s=7349948      p50=1199ns p99=12927ns p999=145407ns max=38.05ms gc=13 gcCPU=12.97% heap=13898MiB rss=18490MiB offheap=0MiB populate=0.55s
+21:52:07 [57/69] E9_gomap-gogc400_n5000000_v128_g16_c64_uniform_r90_rep3.json ok in 21.4s (eta 3m45s)
+syncmap        n=5000000   v=128   g=16  ops/s=2168929      p50=1743ns p99=20735ns p999=909311ns max=717.70ms gc=15 gcCPU=60.70% heap=4935MiB rss=7312MiB offheap=0MiB populate=0.88s
+21:52:28 [58/69] E9_syncmap_n5000000_v128_g16_c64_uniform_r90_rep3.json ok in 20.6s (eta 3m27s)
+gobytes        n=5000000   v=128   g=16  ops/s=9592733      p50=1135ns p99=4415ns p999=91135ns max=4.93ms gc=170 gcCPU=0.62% heap=1544MiB rss=1964MiB offheap=0MiB populate=0.30s
+21:52:47 [59/69] E9_gobytes_n5000000_v128_g16_c64_uniform_r90_rep3.json ok in 18.8s (eta 3m8s)
+goarena        n=5000000   v=128   g=16  ops/s=5059050      p50=871ns p99=22783ns p999=380927ns max=11.76ms gc=4721 gcCPU=8.21% heap=25MiB rss=942MiB offheap=960MiB populate=0.28s
+21:53:06 [60/69] E9_goarena_n5000000_v128_g16_c64_uniform_r90_rep3.json ok in 18.7s (eta 2m49s)
+goarena-gogc400 n=5000000   v=128   g=16  ops/s=7669163      p50=1039ns p99=9599ns p999=190463ns max=28.38ms gc=1401 gcCPU=3.08% heap=59MiB rss=1259MiB offheap=960MiB populate=0.26s
+21:53:24 [61/69] E9_goarena-gogc400_n5000000_v128_g16_c64_uniform_r90_rep3.json ok in 18.7s (eta 2m31s)
+goarena-paced  n=5000000   v=128   g=16  ops/s=10558543     p50=1071ns p99=3167ns p999=46591ns max=22.25ms gc=177 gcCPU=0.39% heap=884MiB rss=1995MiB offheap=960MiB populate=0.25s
+21:53:43 [62/69] E9_goarena-paced_n5000000_v128_g16_c64_uniform_r90_rep3.json ok in 18.8s (eta 2m12s)
+gomap          n=10000000  v=128   g=16  ops/s=4774246      p50=1263ns p99=15487ns p999=487423ns max=29.66ms gc=26 gcCPU=40.77% heap=6215MiB rss=6487MiB offheap=0MiB populate=1.17s
+21:54:03 [63/69] E9_gomap_n10000000_v128_g16_c64_uniform_r90_rep3.json ok in 20.4s (eta 1m53s)
+gomap-gogc400  n=10000000  v=128   g=16  ops/s=1195312      p50=1231ns p99=59903ns p999=1425407ns max=3033.70ms gc=1 gcCPU=11.61% heap=24084MiB rss=5970MiB offheap=0MiB populate=1.10s
+21:54:26 [64/69] E9_gomap-gogc400_n10000000_v128_g16_c64_uniform_r90_rep3.json ok in 23.0s (eta 1m35s)
+syncmap        n=10000000  v=128   g=16  ops/s=2163548      p50=1807ns p99=45567ns p999=1007615ns max=308.95ms gc=6 gcCPU=52.93% heap=9301MiB rss=20062MiB offheap=0MiB populate=1.77s
+21:54:50 [65/69] E9_syncmap_n10000000_v128_g16_c64_uniform_r90_rep3.json ok in 23.5s (eta 1m16s)
+gobytes        n=10000000  v=128   g=16  ops/s=10027854     p50=1199ns p99=3743ns p999=68607ns max=2.30ms gc=89 gcCPU=0.44% heap=3611MiB rss=3825MiB offheap=0MiB populate=0.59s
+21:55:09 [66/69] E9_gobytes_n10000000_v128_g16_c64_uniform_r90_rep3.json ok in 19.2s (eta 57s)
+goarena        n=10000000  v=128   g=16  ops/s=5096219      p50=887ns p99=22271ns p999=372735ns max=11.35ms gc=4915 gcCPU=8.25% heap=22MiB rss=1830MiB offheap=1856MiB populate=0.54s
+21:55:28 [67/69] E9_goarena_n10000000_v128_g16_c64_uniform_r90_rep3.json ok in 19.1s (eta 38s)
+goarena-gogc400 n=10000000  v=128   g=16  ops/s=7704283      p50=1071ns p99=9343ns p999=190463ns max=18.06ms gc=1642 gcCPU=3.45% heap=62MiB rss=2096MiB offheap=1856MiB populate=0.57s
+21:55:47 [68/69] E9_goarena-gogc400_n10000000_v128_g16_c64_uniform_r90_rep3.json ok in 19.2s (eta 19s)
+goarena-paced  n=10000000  v=128   g=16  ops/s=10577808     p50=1103ns p99=3103ns p999=44543ns max=27.94ms gc=92 gcCPU=0.17% heap=1685MiB rss=3867MiB offheap=1856MiB populate=0.48s
+21:56:07 [69/69] E9_goarena-paced_n10000000_v128_g16_c64_uniform_r90_rep3.json ok in 19.3s (eta 0s)
+21:56:07 matrix finished in 21m50s
+# goarena-bench matrix -exp E10 -out results/raw -repeats 3 -duration 15s -warmup 3s -e10-memlimit 1210
+21:56:07 matrix: 24 runs in results/raw
+gomap          n=5000000   v=128   g=16  ops/s=1018372      p50=1423ns p99=137215ns p999=843775ns max=77.94ms gc=103 gcCPU=53.31% heap=1330MiB rss=1383MiB offheap=0MiB populate=0.66s
+21:56:26 [1/24] E10_gomap_n5000000_v128_g16_c64_uniform_r90_ml1210_rep1.json ok in 19.2s (eta 7m22s)
+gomap-gogc400  n=5000000   v=128   g=16  ops/s=972734       p50=1455ns p99=215039ns p999=991231ns max=77.81ms gc=109 gcCPU=54.91% heap=1271MiB rss=1335MiB offheap=0MiB populate=0.58s
+21:56:45 [2/24] E10_gomap-gogc400_n5000000_v128_g16_c64_uniform_r90_ml1210_rep1.json ok in 19.1s (eta 7m2s)
+syncmap        n=5000000   v=128   g=16  ops/s=661270       p50=1871ns p99=22271ns p999=745471ns max=566.18ms gc=21 gcCPU=73.47% heap=1954MiB rss=2124MiB offheap=0MiB populate=0.79s
+21:57:06 [3/24] E10_syncmap_n5000000_v128_g16_c64_uniform_r90_ml1210_rep1.json ok in 20.2s (eta 6m50s)
+gobytes        n=5000000   v=128   g=16  ops/s=9417809      p50=1103ns p99=5439ns p999=103423ns max=14.19ms gc=844 gcCPU=2.85% heap=1122MiB rss=1160MiB offheap=0MiB populate=0.27s
+21:57:24 [4/24] E10_gobytes_n5000000_v128_g16_c64_uniform_r90_ml1210_rep1.json ok in 18.6s (eta 6m26s)
+goarena        n=5000000   v=128   g=16  ops/s=5101240      p50=871ns p99=23295ns p999=372735ns max=52.75ms gc=4588 gcCPU=7.77% heap=15MiB rss=1088MiB offheap=960MiB populate=0.24s
+21:57:43 [5/24] E10_goarena_n5000000_v128_g16_c64_uniform_r90_ml1210_rep1.json ok in 18.7s (eta 6m4s)
+goarena-gogc400 n=5000000   v=128   g=16  ops/s=7583429      p50=999ns p99=10623ns p999=210943ns max=18.74ms gc=1367 gcCPU=3.28% heap=87MiB rss=1418MiB offheap=960MiB populate=0.25s
+21:58:02 [6/24] E10_goarena-gogc400_n5000000_v128_g16_c64_uniform_r90_ml1210_rep1.json ok in 18.7s (eta 5m44s)
+goarena-budget n=5000000   v=128   g=16  ops/s=8518530      p50=1039ns p99=5055ns p999=91135ns max=47.15ms gc=727 gcCPU=1.72% heap=153MiB rss=1140MiB offheap=960MiB populate=0.24s
+21:58:20 [7/24] E10_goarena-budget_n5000000_v128_g16_c64_uniform_r90_ml1210_rep1.json ok in 18.7s (eta 5m24s)
+goarena-paced  n=5000000   v=128   g=16  ops/s=8713553      p50=1039ns p99=5567ns p999=91135ns max=30.33ms gc=738 gcCPU=1.34% heap=177MiB rss=1118MiB offheap=960MiB populate=0.27s
+21:58:39 [8/24] E10_goarena-paced_n5000000_v128_g16_c64_uniform_r90_ml1210_rep1.json ok in 18.7s (eta 5m4s)
+gomap          n=5000000   v=128   g=16  ops/s=1089401      p50=1359ns p99=117759ns p999=811007ns max=83.02ms gc=111 gcCPU=55.19% heap=1303MiB rss=1364MiB offheap=0MiB populate=0.66s
+21:58:58 [9/24] E10_gomap_n5000000_v128_g16_c64_uniform_r90_ml1210_rep2.json ok in 19.2s (eta 4m45s)
+gomap-gogc400  n=5000000   v=128   g=16  ops/s=1043191      p50=1423ns p99=210943ns p999=991231ns max=76.27ms gc=117 gcCPU=55.93% heap=1223MiB rss=1299MiB offheap=0MiB populate=0.61s
+21:59:17 [10/24] E10_gomap-gogc400_n5000000_v128_g16_c64_uniform_r90_ml1210_rep2.json ok in 19.2s (eta 4m27s)
+syncmap        n=5000000   v=128   g=16  ops/s=734155       p50=1807ns p99=18687ns p999=712703ns max=596.43ms gc=21 gcCPU=73.78% heap=1868MiB rss=2059MiB offheap=0MiB populate=0.89s
+21:59:38 [11/24] E10_syncmap_n5000000_v128_g16_c64_uniform_r90_ml1210_rep2.json ok in 20.5s (eta 4m9s)
+gobytes        n=5000000   v=128   g=16  ops/s=9533058      p50=1103ns p99=4671ns p999=105471ns max=30.14ms gc=842 gcCPU=2.35% heap=1065MiB rss=1157MiB offheap=0MiB populate=0.29s
+21:59:57 [12/24] E10_gobytes_n5000000_v128_g16_c64_uniform_r90_ml1210_rep2.json ok in 18.6s (eta 3m50s)
+goarena        n=5000000   v=128   g=16  ops/s=5755573      p50=839ns p99=20223ns p999=307199ns max=13.02ms gc=5558 gcCPU=7.67% heap=21MiB rss=944MiB offheap=960MiB populate=0.25s
+22:00:15 [13/24] E10_goarena_n5000000_v128_g16_c64_uniform_r90_ml1210_rep2.json ok in 18.6s (eta 3m30s)
+goarena-gogc400 n=5000000   v=128   g=16  ops/s=8100737      p50=1015ns p99=9599ns p999=174079ns max=14.69ms gc=1508 gcCPU=2.65% heap=90MiB rss=1482MiB offheap=960MiB populate=0.24s
+22:00:34 [14/24] E10_goarena-gogc400_n5000000_v128_g16_c64_uniform_r90_ml1210_rep2.json ok in 18.7s (eta 3m11s)
+goarena-budget n=5000000   v=128   g=16  ops/s=9535584      p50=1039ns p99=4063ns p999=72703ns max=34.22ms gc=792 gcCPU=1.36% heap=199MiB rss=1137MiB offheap=960MiB populate=0.25s
+22:00:52 [15/24] E10_goarena-budget_n5000000_v128_g16_c64_uniform_r90_ml1210_rep2.json ok in 18.7s (eta 2m51s)
+goarena-paced  n=5000000   v=128   g=16  ops/s=9385553      p50=1039ns p99=4799ns p999=76799ns max=30.28ms gc=781 gcCPU=1.74% heap=218MiB rss=1137MiB offheap=960MiB populate=0.25s
+22:01:11 [16/24] E10_goarena-paced_n5000000_v128_g16_c64_uniform_r90_ml1210_rep2.json ok in 18.7s (eta 2m32s)
+gomap          n=5000000   v=128   g=16  ops/s=1088615      p50=1391ns p99=202751ns p999=909311ns max=67.82ms gc=116 gcCPU=55.35% heap=1263MiB rss=1338MiB offheap=0MiB populate=0.66s
+22:01:30 [17/24] E10_gomap_n5000000_v128_g16_c64_uniform_r90_ml1210_rep3.json ok in 19.2s (eta 2m13s)
+gomap-gogc400  n=5000000   v=128   g=16  ops/s=1095981      p50=1359ns p99=117759ns p999=860159ns max=74.96ms gc=110 gcCPU=55.25% heap=1273MiB rss=1345MiB offheap=0MiB populate=0.61s
+22:01:51 [18/24] E10_gomap-gogc400_n5000000_v128_g16_c64_uniform_r90_ml1210_rep3.json ok in 20.2s (eta 1m55s)
+syncmap        n=5000000   v=128   g=16  ops/s=741180       p50=1775ns p99=18175ns p999=679935ns max=632.73ms gc=21 gcCPU=74.03% heap=1896MiB rss=2052MiB offheap=0MiB populate=0.83s
+22:02:11 [19/24] E10_syncmap_n5000000_v128_g16_c64_uniform_r90_ml1210_rep3.json ok in 20.5s (eta 1m36s)
+gobytes        n=5000000   v=128   g=16  ops/s=9608787      p50=1103ns p99=4671ns p999=105471ns max=4.47ms gc=844 gcCPU=2.36% heap=1089MiB rss=1160MiB offheap=0MiB populate=0.30s
+22:02:30 [20/24] E10_gobytes_n5000000_v128_g16_c64_uniform_r90_ml1210_rep3.json ok in 18.6s (eta 1m17s)
+goarena        n=5000000   v=128   g=16  ops/s=5644336      p50=855ns p99=20735ns p999=323583ns max=11.27ms gc=5430 gcCPU=7.70% heap=20MiB rss=935MiB offheap=960MiB populate=0.24s
+22:02:48 [21/24] E10_goarena_n5000000_v128_g16_c64_uniform_r90_ml1210_rep3.json ok in 18.6s (eta 57s)
+goarena-gogc400 n=5000000   v=128   g=16  ops/s=8115040      p50=1015ns p99=9343ns p999=169983ns max=16.58ms gc=1518 gcCPU=2.80% heap=118MiB rss=1261MiB offheap=960MiB populate=0.26s
+22:03:07 [22/24] E10_goarena-gogc400_n5000000_v128_g16_c64_uniform_r90_ml1210_rep3.json ok in 18.7s (eta 38s)
+goarena-budget n=5000000   v=128   g=16  ops/s=9209589      p50=1039ns p99=4671ns p999=82943ns max=27.42ms gc=766 gcCPU=1.34% heap=151MiB rss=1142MiB offheap=960MiB populate=0.24s
+22:03:26 [23/24] E10_goarena-budget_n5000000_v128_g16_c64_uniform_r90_ml1210_rep3.json ok in 18.7s (eta 19s)
+goarena-paced  n=5000000   v=128   g=16  ops/s=9421935      p50=1039ns p99=4543ns p999=76799ns max=27.51ms gc=798 gcCPU=1.70% heap=182MiB rss=1140MiB offheap=960MiB populate=0.25s
+22:03:44 [24/24] E10_goarena-paced_n5000000_v128_g16_c64_uniform_r90_ml1210_rep3.json ok in 18.6s (eta 0s)
+22:03:44 matrix finished in 7m37s
+# goarena-bench matrix -exp E1t -out results/raw -repeats 2 -duration 15s -warmup 3s
+22:03:44 matrix: 20 runs in results/raw
+gomap          n=10000000  v=128   g=14  ops/s=23177376     p50=467ns p99=1551ns p999=8575ns max=28.32ms gc=2 gcCPU=4.70% heap=3677MiB rss=4177MiB offheap=0MiB populate=1.33s
+22:04:05 [1/20] E1t_gomap_n10000000_v128_g14_c64_uniform_r90_rep1.json ok in 20.2s (eta 6m24s)
+gomap-gogc400  n=10000000  v=128   g=14  ops/s=23291894     p50=483ns p99=1903ns p999=8575ns max=34.31ms gc=1 gcCPU=5.09% heap=6998MiB rss=7178MiB offheap=0MiB populate=1.17s
+22:04:25 [2/20] E1t_gomap-gogc400_n10000000_v128_g14_c64_uniform_r90_rep1.json ok in 20.4s (eta 6m6s)
+syncmap        n=10000000  v=128   g=14  ops/s=12316713     p50=951ns p99=2031ns p999=10367ns max=34.23ms gc=1 gcCPU=12.73% heap=6445MiB rss=6695MiB offheap=0MiB populate=1.54s
+22:04:52 [3/20] E1t_syncmap_n10000000_v128_g14_c64_uniform_r90_rep1.json ok in 26.6s (eta 6m21s)
+gobytes        n=10000000  v=128   g=14  ops/s=27752738     p50=403ns p99=1167ns p999=9087ns max=0.44ms gc=0 gcCPU=0.00% heap=1937MiB rss=1935MiB offheap=0MiB populate=0.63s
+22:05:11 [4/20] E1t_gobytes_n10000000_v128_g14_c64_uniform_r90_rep1.json ok in 19.0s (eta 5m45s)
+goarena        n=10000000  v=128   g=14  ops/s=32224175     p50=347ns p99=903ns p999=3551ns max=19.13ms gc=0 gcCPU=0.00% heap=4MiB rss=1796MiB offheap=1856MiB populate=0.55s
+22:05:30 [5/20] E1t_goarena_n10000000_v128_g14_c64_uniform_r90_rep1.json ok in 19.1s (eta 5m16s)
+gomap          n=10000000  v=128   g=15  ops/s=23738775     p50=483ns p99=1679ns p999=11135ns max=37.87ms gc=3 gcCPU=5.17% heap=2477MiB rss=4056MiB offheap=0MiB populate=1.32s
+22:05:50 [6/20] E1t_gomap_n10000000_v128_g15_c64_uniform_r90_rep1.json ok in 20.2s (eta 4m53s)
+gomap-gogc400  n=10000000  v=128   g=15  ops/s=24331522     p50=483ns p99=1999ns p999=10367ns max=31.48ms gc=1 gcCPU=4.77% heap=7044MiB rss=7227MiB offheap=0MiB populate=1.12s
+22:06:10 [7/20] E1t_gomap-gogc400_n10000000_v128_g15_c64_uniform_r90_rep1.json ok in 20.4s (eta 4m31s)
+syncmap        n=10000000  v=128   g=15  ops/s=12648157     p50=967ns p99=2031ns p999=11135ns max=54.64ms gc=1 gcCPU=12.07% heap=6212MiB rss=6457MiB offheap=0MiB populate=1.67s
+22:06:32 [8/20] E1t_syncmap_n10000000_v128_g15_c64_uniform_r90_rep1.json ok in 21.9s (eta 4m12s)
+gobytes        n=10000000  v=128   g=15  ops/s=29404576     p50=403ns p99=1167ns p999=9855ns max=0.36ms gc=0 gcCPU=0.00% heap=1917MiB rss=1914MiB offheap=0MiB populate=0.62s
+22:06:51 [9/20] E1t_gobytes_n10000000_v128_g15_c64_uniform_r90_rep1.json ok in 19.0s (eta 3m48s)
+goarena        n=10000000  v=128   g=15  ops/s=35238441     p50=339ns p99=855ns p999=2079ns max=5.00ms gc=0 gcCPU=0.00% heap=4MiB rss=1796MiB offheap=1856MiB populate=0.53s
+22:07:10 [10/20] E1t_goarena_n10000000_v128_g15_c64_uniform_r90_rep1.json ok in 19.0s (eta 3m26s)
+gomap          n=10000000  v=128   g=14  ops/s=22843183     p50=467ns p99=1551ns p999=7359ns max=32.23ms gc=3 gcCPU=5.13% heap=2641MiB rss=4009MiB offheap=0MiB populate=1.30s
+22:07:34 [11/20] E1t_gomap_n10000000_v128_g14_c64_uniform_r90_rep2.json ok in 23.8s (eta 3m8s)
+gomap-gogc400  n=10000000  v=128   g=14  ops/s=23298265     p50=483ns p99=1903ns p999=8575ns max=13.24ms gc=1 gcCPU=5.44% heap=7121MiB rss=7304MiB offheap=0MiB populate=1.16s
+22:07:55 [12/20] E1t_gomap-gogc400_n10000000_v128_g14_c64_uniform_r90_rep2.json ok in 20.4s (eta 2m47s)
+syncmap        n=10000000  v=128   g=14  ops/s=12040826     p50=967ns p99=2079ns p999=11135ns max=57.72ms gc=1 gcCPU=11.90% heap=5943MiB rss=6223MiB offheap=0MiB populate=1.73s
+22:08:16 [13/20] E1t_syncmap_n10000000_v128_g14_c64_uniform_r90_rep2.json ok in 22.0s (eta 2m26s)
+gobytes        n=10000000  v=128   g=14  ops/s=28215003     p50=403ns p99=1071ns p999=7231ns max=0.32ms gc=0 gcCPU=0.00% heap=1906MiB rss=1904MiB offheap=0MiB populate=0.64s
+22:08:36 [14/20] E1t_gobytes_n10000000_v128_g14_c64_uniform_r90_rep2.json ok in 19.0s (eta 2m5s)
+goarena        n=10000000  v=128   g=14  ops/s=34131075     p50=339ns p99=839ns p999=2031ns max=3.37ms gc=0 gcCPU=0.00% heap=4MiB rss=1796MiB offheap=1856MiB populate=0.55s
+22:08:55 [15/20] E1t_goarena_n10000000_v128_g14_c64_uniform_r90_rep2.json ok in 19.1s (eta 1m43s)
+gomap          n=10000000  v=128   g=15  ops/s=23850333     p50=483ns p99=1679ns p999=11903ns max=28.93ms gc=3 gcCPU=5.12% heap=3371MiB rss=4121MiB offheap=0MiB populate=1.42s
+22:09:15 [16/20] E1t_gomap_n10000000_v128_g15_c64_uniform_r90_rep2.json ok in 20.3s (eta 1m23s)
+gomap-gogc400  n=10000000  v=128   g=15  ops/s=24430571     p50=491ns p99=2079ns p999=10879ns max=1.28ms gc=0 gcCPU=0.00% heap=7560MiB rss=7754MiB offheap=0MiB populate=1.14s
+22:09:35 [17/20] E1t_gomap-gogc400_n10000000_v128_g15_c64_uniform_r90_rep2.json ok in 20.5s (eta 1m2s)
+syncmap        n=10000000  v=128   g=15  ops/s=12140751     p50=967ns p99=2143ns p999=14975ns max=33.71ms gc=1 gcCPU=11.96% heap=5961MiB rss=6201MiB offheap=0MiB populate=1.76s
+22:09:57 [18/20] E1t_syncmap_n10000000_v128_g15_c64_uniform_r90_rep2.json ok in 22.0s (eta 41s)
+gobytes        n=10000000  v=128   g=15  ops/s=28704270     p50=403ns p99=1199ns p999=10879ns max=0.35ms gc=0 gcCPU=0.00% heap=1885MiB rss=1883MiB offheap=0MiB populate=0.61s
+22:10:16 [19/20] E1t_gobytes_n10000000_v128_g15_c64_uniform_r90_rep2.json ok in 19.0s (eta 21s)
+goarena        n=10000000  v=128   g=15  ops/s=34545845     p50=363ns p99=903ns p999=2335ns max=3.15ms gc=0 gcCPU=0.00% heap=4MiB rss=1796MiB offheap=1856MiB populate=0.53s
+22:10:35 [20/20] E1t_goarena_n10000000_v128_g15_c64_uniform_r90_rep2.json ok in 19.0s (eta 0s)
+22:10:35 matrix finished in 6m51s
+# goarena-bench aggregate -in results/raw -out results
+aggregated 113 runs into 49 configurations
+ALL V3 BENCHMARKS DONE Tue Oct 13 22:10:36     2026

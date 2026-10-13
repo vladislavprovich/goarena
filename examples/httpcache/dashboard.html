@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>goarena dashboard</title>
+<style>
+  :root {
+    --bg: #f3f5f8; --card: #ffffff; --ink: #1f2933; --muted: #6b7785; --grid: #e4e8ee;
+    --blue: #4C72B0; --green: #55A868; --red: #C44E52; --purple: #8172B2; --sand: #CCB974; --cyan: #64B5CD;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 14px/1.4 "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  header { display: flex; align-items: center; gap: 16px; padding: 14px 24px; background: var(--card);
+           border-bottom: 1px solid var(--grid); }
+  header h1 { font-size: 19px; margin: 0; font-weight: 600; letter-spacing: .2px; }
+  header h1 span { color: var(--green); }
+  .badge { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; color: #fff; background: var(--green); }
+  .badge.gomap { background: var(--blue); }
+  .meta { margin-left: auto; color: var(--muted); font-size: 13px; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-right: 6px; }
+  .dot.off { background: var(--red); }
+  main { padding: 16px 24px; }
+  .kpis { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-bottom: 14px; }
+  .kpi { background: var(--card); border: 1px solid var(--grid); border-radius: 10px; padding: 10px 14px; }
+  .kpi .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .4px; }
+  .kpi .value { font-size: 22px; font-weight: 600; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .kpi .sub { color: var(--muted); font-size: 12px; }
+  .charts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .card { background: var(--card); border: 1px solid var(--grid); border-radius: 10px; padding: 10px 12px 6px; }
+  .card h2 { font-size: 13px; font-weight: 600; margin: 0 0 4px; color: var(--ink); }
+  .card h2 small { color: var(--muted); font-weight: 400; }
+  canvas { width: 100%; height: 270px; display: block; }
+  footer { color: var(--muted); font-size: 12px; padding: 4px 24px 12px; }
+  @media (max-width: 1100px) { .kpis { grid-template-columns: repeat(4, 1fr); } .charts { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 700px) { .kpis { grid-template-columns: 1fr 1fr; } .charts { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>go<span>arena</span> &middot; httpcache</h1>
+  <div id="backend" class="badge">goarena</div>
+  <div class="meta"><span id="dot" class="dot"></span><span id="status">connecting&hellip;</span></div>
+</header>
+<main>
+  <section class="kpis">
+    <div class="kpi"><div class="label">Throughput</div><div class="value" id="k-ops">&ndash;</div><div class="sub">operations / s</div></div>
+    <div class="kpi"><div class="label">Latency p99</div><div class="value" id="k-p99">&ndash;</div><div class="sub" id="k-p50">p50 &ndash;</div></div>
+    <div class="kpi"><div class="label">GC CPU</div><div class="value" id="k-gc">&ndash;</div><div class="sub" id="k-gcc">&ndash;</div></div>
+    <div class="kpi"><div class="label">Go heap</div><div class="value" id="k-heap">&ndash;</div><div class="sub" id="k-goal">goal &ndash;</div></div>
+    <div class="kpi"><div class="label">Off-heap</div><div class="value" id="k-off">&ndash;</div><div class="sub">C memory (arena + index)</div></div>
+    <div class="kpi"><div class="label">Entries</div><div class="value" id="k-ent">&ndash;</div><div class="sub" id="k-hit">hit ratio &ndash;</div></div>
+    <div class="kpi"><div class="label">Process RSS</div><div class="value" id="k-rss">&ndash;</div><div class="sub" id="k-up">uptime &ndash;</div></div>
+  </section>
+  <section class="charts">
+    <div class="card"><h2>Throughput <small>ops/s</small></h2><canvas id="c-ops"></canvas></div>
+    <div class="card"><h2>Operation latency <small>&micro;s, 1-s windows</small></h2><canvas id="c-lat"></canvas></div>
+    <div class="card"><h2>GC CPU <small>% of available CPU</small></h2><canvas id="c-gc"></canvas></div>
+    <div class="card"><h2>Memory <small>Go heap vs off-heap, MiB</small></h2><canvas id="c-mem"></canvas></div>
+    <div class="card"><h2>Entries <small>count</small></h2><canvas id="c-ent"></canvas></div>
+    <div class="card"><h2>GC activity <small>cycles/s and STW ms/s</small></h2><canvas id="c-pause"></canvas></div>
+  </section>
+</main>
+<footer>Data from <code>/stats</code>, refreshed every second; last 120 samples shown. Self-contained page, no external resources.</footer>
+<script>
+"use strict";
+const MAXPTS = 120;
+const C = { blue: "#4C72B0", green: "#55A868", red: "#C44E52", purple: "#8172B2", sand: "#CCB974", cyan: "#64B5CD", grey: "#8C8C8C" };
+const series = { t: [], ops: [], p50: [], p99: [], p999: [], gc: [], heap: [], off: [], rss: [], ent: [], cyc: [], pause: [] };
+
+function push(key, v) { const a = series[key]; a.push(v); if (a.length > MAXPTS) a.shift(); }
+
+function fmtNum(v) {
+  if (v >= 1e9) return (v / 1e9).toFixed(2) + " G";
+  if (v >= 1e6) return (v / 1e6).toFixed(2) + " M";
+  if (v >= 1e3) return (v / 1e3).toFixed(1) + " k";
+  return v.toFixed(v < 10 && v % 1 ? 2 : 0);
+}
+function fmtBytes(b) {
+  if (b >= 1 << 30) return (b / (1 << 30)).toFixed(2) + " GiB";
+  if (b >= 1 << 20) return (b / (1 << 20)).toFixed(1) + " MiB";
+  if (b >= 1 << 10) return (b / (1 << 10)).toFixed(0) + " KiB";
+  return b + " B";
+}
+function fmtNs(ns) { return ns >= 1e6 ? (ns / 1e6).toFixed(2) + " ms" : ns >= 1e3 ? (ns / 1e3).toFixed(2) + " µs" : ns + " ns"; }
+function fmtDur(s) { const m = Math.floor(s / 60), r = Math.floor(s % 60); return m + "m " + (r < 10 ? "0" : "") + r + "s"; }
+
+function niceMax(v) {
+  if (!(v > 0)) return 1;
+  const p = Math.pow(10, Math.floor(Math.log10(v))), f = v / p;
+  return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p;
+}
+
+// drawChart renders line series on a canvas: lines = [{data, color, label, fill}]
+function drawChart(id, lines, opts) {
+  opts = opts || {};
+  const cv = document.getElementById(id), dpr = window.devicePixelRatio || 1;
+  const w = cv.clientWidth, h = cv.clientHeight;
+  if (cv.width !== Math.round(w * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+  const g = cv.getContext("2d");
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.clearRect(0, 0, w, h);
+  const L = 54, R = 10, T = 22, B = 22, pw = w - L - R, ph = h - T - B;
+  let max = opts.max || 0;
+  for (const l of lines) for (const v of l.data) if (v > max) max = v;
+  max = niceMax(max * 1.08);
+  g.font = "11px Segoe UI, system-ui, sans-serif";
+  g.strokeStyle = "#e4e8ee"; g.fillStyle = "#6b7785"; g.lineWidth = 1;
+  g.textAlign = "right"; g.textBaseline = "middle";
+  for (let i = 0; i <= 4; i++) {
+    const y = T + ph - (ph * i) / 4, v = (max * i) / 4;
+    g.beginPath(); g.moveTo(L, Math.round(y) + 0.5); g.lineTo(L + pw, Math.round(y) + 0.5); g.stroke();
+    g.fillText(opts.fmt ? opts.fmt(v) : fmtNum(v), L - 6, y);
+  }
+  g.textAlign = "center"; g.textBaseline = "top";
+  const n = Math.max(1, ...lines.map(l => l.data.length));
+  for (const s of [-120, -90, -60, -30, 0]) {
+    const x = L + pw * (1 + s / MAXPTS);
+    g.fillText(s === 0 ? "now" : s + " s", x, T + ph + 5);
+  }
+  for (const l of lines) {
+    const d = l.data; if (!d.length) continue;
+    const x0 = L + pw * (1 - (d.length - 1) / MAXPTS), dx = pw / MAXPTS;
+    g.beginPath();
+    d.forEach((v, i) => { const x = x0 + i * dx, y = T + ph - (ph * v) / max; i ? g.lineTo(x, y) : g.moveTo(x, y); });
+    if (l.fill) {
+      g.save(); g.lineTo(x0 + (d.length - 1) * dx, T + ph); g.lineTo(x0, T + ph); g.closePath();
+      g.globalAlpha = 0.14; g.fillStyle = l.color; g.fill(); g.restore();
+      g.beginPath();
+      d.forEach((v, i) => { const x = x0 + i * dx, y = T + ph - (ph * v) / max; i ? g.lineTo(x, y) : g.moveTo(x, y); });
+    }
+    g.strokeStyle = l.color; g.lineWidth = 2; g.lineJoin = "round"; g.stroke();
+  }
+  // legend
+  let lx = L + 4; g.textAlign = "left"; g.textBaseline = "middle";
+  for (const l of lines) {
+    if (!l.label) continue;
+    g.fillStyle = l.color; g.fillRect(lx, 7, 14, 3);
+    g.fillStyle = "#1f2933"; g.fillText(l.label, lx + 19, 9);
+    lx += 19 + g.measureText(l.label).width + 16;
+  }
+}
+
+function render() {
+  drawChart("c-ops", [{ data: series.ops, color: C.blue, fill: true }]);
+  drawChart("c-lat", [
+    { data: series.p50, color: C.green, label: "p50" },
+    { data: series.p99, color: C.purple, label: "p99" },
+    { data: series.p999, color: C.red, label: "p99.9" }], { fmt: v => v.toFixed(v < 10 ? 1 : 0) });
+  drawChart("c-gc", [{ data: series.gc, color: C.red, fill: true }], { max: 1, fmt: v => v.toFixed(1) + "%" });
+  drawChart("c-mem", [
+    { data: series.heap, color: C.blue, label: "Go heap" },
+    { data: series.off, color: C.green, label: "off-heap" },
+    { data: series.rss, color: C.grey, label: "RSS" }], { fmt: v => fmtNum(v) });
+  drawChart("c-ent", [{ data: series.ent, color: C.sand, fill: true }]);
+  drawChart("c-pause", [
+    { data: series.cyc, color: C.purple, label: "GC cycles/s" },
+    { data: series.pause, color: C.red, label: "STW ms/s" }], { max: 1, fmt: v => v.toFixed(1) });
+}
+
+function setText(id, s) { document.getElementById(id).textContent = s; }
+
+function ingest(s) {
+    const MiB = 1 << 20;
+    push("ops", s.ops_per_sec);
+    push("p50", s.latency_1s.p50_ns / 1e3);
+    push("p99", s.latency_1s.p99_ns / 1e3);
+    push("p999", s.latency_1s.p999_ns / 1e3);
+    push("gc", s.gc_cpu_percent_1s);
+    push("heap", s.runtime.heap_objects_bytes / MiB);
+    push("off", s.offheap_bytes / MiB);
+    push("rss", s.runtime.rss_bytes / MiB);
+    push("ent", s.entries);
+    push("cyc", s.gc_cycles_per_s);
+    push("pause", s.gc_pause_ms_1s);
+}
+
+async function poll() {
+  try {
+    const r = await fetch("/stats", { cache: "no-store" });
+    const s = await r.json();
+    ingest(s);
+    const b = document.getElementById("backend");
+    b.textContent = s.backend + " backend"; b.className = "badge " + s.backend;
+    setText("k-ops", fmtNum(s.ops_per_sec));
+    setText("k-p99", fmtNs(s.latency_1s.p99_ns));
+    setText("k-p50", "p50 " + fmtNs(s.latency_1s.p50_ns) + " · max " + fmtNs(s.latency_1s.max_ns));
+    setText("k-gc", s.gc_cpu_percent_1s.toFixed(2) + " %");
+    setText("k-gcc", s.runtime.gc_cycles_total + " cycles, avg " + s.gc_cpu_percent_total.toFixed(2) + " %");
+    setText("k-heap", fmtBytes(s.runtime.heap_objects_bytes));
+    setText("k-goal", "goal " + fmtBytes(s.runtime.heap_goal_bytes));
+    setText("k-off", fmtBytes(s.offheap_bytes));
+    setText("k-ent", fmtNum(s.entries));
+    setText("k-hit", "hit ratio " + (s.gets ? (100 * s.hits / s.gets).toFixed(1) : "0") + " %");
+    setText("k-rss", fmtBytes(s.runtime.rss_bytes));
+    setText("k-up", "uptime " + fmtDur(s.uptime_s));
+    setText("status", "live · " + new Date(s.time).toLocaleTimeString());
+    document.getElementById("dot").className = "dot";
+    render();
+  } catch (e) {
+    setText("status", "disconnected");
+    document.getElementById("dot").className = "dot off";
+  }
+}
+window.addEventListener("resize", render);
+
+// Prefill the charts with the server-side history, then poll every second.
+async function start() {
+  try {
+    const r = await fetch("/stats/history", { cache: "no-store" });
+    const h = await r.json();
+    for (const s of h.slice(0, -1)) ingest(s);
+  } catch (e) { /* history is optional */ }
+  await poll();
+  setInterval(poll, 1000);
+}
+start();
+</script>
+</body>
+</html>

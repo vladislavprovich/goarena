@@ -1,0 +1,9 @@
+?   	github.com/savokh/goarena	[no test files]
+ok  	github.com/savokh/goarena/arena	0.442s	coverage: 98.1% of statements
+ok  	github.com/savokh/goarena/cmd/goarena-bench	3.212s	coverage: 88.1% of statements
+ok  	github.com/savokh/goarena/examples/httpcache	3.326s	coverage: 94.2% of statements
+ok  	github.com/savokh/goarena/gcstats	0.594s	coverage: 96.7% of statements
+ok  	github.com/savokh/goarena/internal/cmem	0.290s	coverage: 100.0% of statements
+ok  	github.com/savokh/goarena/internal/latency	0.519s	coverage: 91.4% of statements
+ok  	github.com/savokh/goarena/internal/tsc	0.830s	coverage: 87.5% of statements
+ok  	github.com/savokh/goarena/store	4.624s	coverage: 99.3% of statements

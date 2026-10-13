@@ -1,0 +1,20 @@
+$ go version
+go version go1.24.6 windows/amd64
+$ gcc --version
+gcc.exe (x86_64-posix-seh-rev1, Built by MinGW-Builds project) 14.2.0
+$ go env CGO_ENABLED GOOS GOARCH
+1
+windows
+amd64
+$ go vet ./...
+go vet: no issues (exit code 0)
+$ go build ./...
+go build: ok (exit code 0)
+$ go build -o bin/goarena-bench.exe ./cmd/goarena-bench
+ok (exit code 0)
+$ go build -o bin/httpcache.exe ./examples/httpcache
+ok (exit code 0)
+$ gofmt -l .
+gofmt: 0 files need formatting
+7764181 bin/goarena-bench.exe
+15975399 bin/httpcache.exe

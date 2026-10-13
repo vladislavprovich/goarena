@@ -1,0 +1,38 @@
+goos: windows
+goarch: amd64
+pkg: github.com/savokh/goarena/internal/cmem
+cpu: AMD Ryzen 7 7735HS with Radeon Graphics        
+BenchmarkGoCall-16             	728980308	         1.627 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCgoCall-16            	23990163	        43.42 ns/op	       0 B/op	       0 allocs/op
+BenchmarkCgoCallParallel-16    	74228946	        16.59 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMallocFree128-16      	 5126390	       204.3 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoMake128-16          	29271076	        41.83 ns/op	     128 B/op	       1 allocs/op
+PASS
+ok  	github.com/savokh/goarena/internal/cmem	6.458s
+goos: windows
+goarch: amd64
+pkg: github.com/savokh/goarena/arena
+cpu: AMD Ryzen 7 7735HS with Radeon Graphics        
+BenchmarkArenaAlloc128-16         	231512028	         6.477 ns/op	       0 B/op	       0 allocs/op
+BenchmarkArenaAllocBytes128-16    	152723031	        12.00 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMakeBytes128-16          	23005076	        44.57 ns/op	     128 B/op	       1 allocs/op
+BenchmarkSlabAllocFree128-16      	62521165	        16.61 ns/op	       0 B/op	       0 allocs/op
+BenchmarkSlabAllocFreeMixed-16    	57243987	        18.14 ns/op	       0 B/op	       0 allocs/op
+BenchmarkNewValue-16              	21476739	        52.28 ns/op	       0 B/op	       0 allocs/op
+BenchmarkGoNew-16                 	40458068	        29.56 ns/op	      24 B/op	       1 allocs/op
+PASS
+ok  	github.com/savokh/goarena/arena	11.286s
+goos: windows
+goarch: amd64
+pkg: github.com/savokh/goarena/store
+cpu: AMD Ryzen 7 7735HS with Radeon Graphics        
+BenchmarkStoreGet-16            	 5156607	       211.5 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMapGet-16              	 5889766	       213.5 ns/op	       0 B/op	       0 allocs/op
+BenchmarkStoreSet-16            	 5259411	       224.2 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMapSet-16              	 3997676	       298.1 ns/op	     144 B/op	       2 allocs/op
+BenchmarkStoreGetParallel-16    	43856121	        27.75 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMapGetParallel-16      	35342245	        39.17 ns/op	       0 B/op	       0 allocs/op
+BenchmarkStoreSetParallel-16    	43146687	        33.42 ns/op	       0 B/op	       0 allocs/op
+BenchmarkMapSetParallel-16      	26052464	        58.96 ns/op	     144 B/op	       2 allocs/op
+PASS
+ok  	github.com/savokh/goarena/store	15.489s

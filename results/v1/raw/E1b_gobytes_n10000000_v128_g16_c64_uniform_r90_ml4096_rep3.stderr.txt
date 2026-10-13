@@ -1,0 +1,14 @@
+#phase populate-start
+gc 1 @0.228s 0%: 0+0.59+0 ms clock, 0+0/1.1/0+0 ms cpu, 6->7->6 MB, 7 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 2 @0.229s 0%: 0+0+0 ms clock, 0+0/0/0+0 ms cpu, 16->18->18 MB, 16 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 3 @0.229s 0%: 0+0+0 ms clock, 0+0/0/0+0 ms cpu, 38->38->38 MB, 38 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 4 @0.236s 0%: 0+0.72+0.037 ms clock, 0+0/0.40/0+0.59 ms cpu, 75->75->68 MB, 77 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 5 @0.250s 0%: 0.51+0.022+0 ms clock, 8.2+0.022/0.022/0+0 ms cpu, 135->137->131 MB, 138 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 6 @0.297s 0%: 0.10+0.51+0 ms clock, 1.7+0/0/0+0 ms cpu, 259->263->236 MB, 263 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 7 @0.352s 0%: 0.84+0+0 ms clock, 13+0/0/0+0 ms cpu, 469->473->437 MB, 472 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 8 @0.481s 0%: 0+1.2+0 ms clock, 0+0/4.4/0.81+0 ms cpu, 870->876->804 MB, 874 MB goal, 0 MB stacks, 0 MB globals, 16 P
+gc 9 @0.700s 0%: 0+1.2+0 ms clock, 0+0/4.0/4.0+0 ms cpu, 1601->1604->1480 MB, 1608 MB goal, 0 MB stacks, 0 MB globals, 16 P
+#phase populate-end
+#phase measure-start
+#phase measure-end
+gobytes        n=10000000  v=128   g=16  ops/s=30327715     p50=403ns p99=1295ns p999=17663ns max=0.64ms gc=0 gcCPU=0.00% heap=1853MiB rss=1894MiB offheap=0MiB populate=0.60s
