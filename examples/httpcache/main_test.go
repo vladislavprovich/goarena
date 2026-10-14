@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/vladislavprovich/goarena/arena"
 )
 
 func TestParseFlags(t *testing.T) {
@@ -46,7 +48,7 @@ func TestServeWithSelfLoad(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if doc.Entries < 5000 || doc.OpsTotal == 0 || doc.OpsPerSec <= 0 || doc.Latency.Count == 0 || doc.OffHeapBytes <= 0 {
+	if doc.Entries < 5000 || doc.OpsTotal == 0 || doc.OpsPerSec <= 0 || doc.Latency.Count == 0 || (arena.OffHeap && doc.OffHeapBytes <= 0) {
 		t.Fatalf("no traffic visible: %+v", doc)
 	}
 	if doc.HTTPRequests == 0 {

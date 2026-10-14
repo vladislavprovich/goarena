@@ -74,3 +74,39 @@ jobs:
           go run ./examples/quickstart
           go run ./examples/typed-arena
           go run ./examples/gc-pacing
+
+  # Builds without cgo use the pure-Go fallback of internal/cmem (the arena
+  # lives in the Go heap). Everything must still build, pass and run;
+  # "go build ./..." also compiles examples/httpcache.
+  test-nocgo:
+    name: test (ubuntu-latest, CGO_ENABLED=0)
+    runs-on: ubuntu-latest
+    env:
+      CGO_ENABLED: "0"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.27.x'
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: go build
+        run: go build ./...
+
+      - name: go test
+        run: go test -count=1 ./...
+
+      - name: Run examples
+        run: |
+          go run ./examples/quickstart
+          go run ./examples/typed-arena
+          go run ./examples/gc-pacing
+
+      - name: Cross-compile without a C toolchain
+        run: |
+          GOOS=windows GOARCH=amd64 go build ./...
+          GOOS=darwin GOARCH=arm64 go build ./...
+          GOOS=linux GOARCH=arm64 go build ./...

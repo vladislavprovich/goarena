@@ -30,4 +30,17 @@
 // The pacer changes process-wide runtime settings. Use one per process:
 // [Register] adds an off-heap source to the shared default pacer, which is
 // what store.Config.GCPacing does.
+//
+// # When to use it
+//
+// Most programs do not use this package directly: setting
+// store.Config.GCPacing is enough. Start a [Pacer] of your own only for
+// off-heap memory that goarena's store does not manage (for example an
+// arena.Arena you use directly, or C memory of another library), or call
+// [SetDefaultConfig] before the first paced store is created to choose the
+// GOGC target, the total memory budget or the adjustment interval.
+//
+// In builds without cgo, goarena's memory is part of the Go heap and
+// store.Config.GCPacing does not register it; the runtime then already
+// accounts for it.
 package gcpace

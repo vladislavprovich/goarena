@@ -4,7 +4,56 @@ All notable changes to this project are documented in this file. The format
 follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project adheres to [Semantic Versioning](https://semver.org/).
 
-## [0.3.2] - 2026-10-14
+## [0.4.0] - 2026-10-14
+
+New, backward-compatible API (hence a minor release; 0.3.2 was never
+tagged and its fix is part of this release), a pure-Go build mode and a
+rewritten documentation set.
+
+### Added
+
+- Builds without cgo: with `CGO_ENABLED=0` (no C compiler, cross-compilation)
+  `internal/cmem` falls back to pointer-free `[]byte` blocks in the Go heap,
+  kept reachable in a registry until `Free` (`go_heap_allocator.go`, build tag
+  `!cgo`). The API and behaviour are unchanged and the GC still does not scan
+  the data, but it counts towards the heap goal and `GOMEMLIMIT`. Previously
+  such builds failed with `undefined: cmem.Malloc`.
+- `arena.OffHeap`: reports the mode (true with cgo).
+- `store.MustNew(Config) *Store`.
+- `Store.GetOrSet(key, val) (actual []byte, loaded bool, err error)`: atomic
+  set-if-absent; hits are lock-free.
+- `Store.GetOrLoad(key, load func() ([]byte, error)) ([]byte, error)`:
+  cache-aside helper; `load` runs without any lock, concurrent misses may
+  call it more than once and all return the first stored value; a value that
+  cannot be stored is returned together with the error.
+- `Store.SetStringWithTTL`, `Store.HasString`.
+- `Stats.String()`: one-line human-readable summary.
+- Runnable examples on pkg.go.dev for `New`, `MustNew`, `Get`, `GetInto`,
+  `View`, `SetWithTTL`, `EvictExpired`, `GetOrSet`, `GetOrLoad`, `Range`,
+  `Config.GCPacing`, `Stats.String`, error handling, `arena.NewValue`,
+  `Arena.Reset` and `arena.OffHeap`; expanded package documentation.
+- Documentation: `docs/GUIDE.md` (user guide), `docs/USE_CASES.md` (when to
+  use goarena and when not), `docs/FAQ.md`, `docs/TROUBLESHOOTING.md`,
+  `docs/README.md` (index); README rewritten as a landing page; DESIGN.md
+  section 17.
+- CI job `test (ubuntu-latest, CGO_ENABLED=0)`: vet, build, test, examples
+  and cross-compilation without a C toolchain; Makefile target `nocgo`.
+- `examples/quickstart` shows `GetOrLoad`, `GetOrSet`, the string helpers,
+  error details and `Stats.String`.
+
+### Changed
+
+- Write errors carry details and wrap the sentinel errors: `ErrTooLarge`
+  names the key or entry size and the limit, `ErrNoMemory` (also from `New`)
+  the sizes, the reserved bytes, `MaxMemory` and the chunk size. `errors.Is`
+  works as before; code that compared errors with `==` must switch to
+  `errors.Is`.
+- `Stats` implements `fmt.Stringer`, so `%v` and `%+v` print the summary;
+  use `%#v` to print every field.
+- Builds without cgo only (no change with cgo): `Stats.OffHeapBytes` is 0,
+  `GoMemoryBudget` returns the whole budget, `Config.GCPacing` has no effect,
+  and race-detector builds read under the shard lock instead of the seqlock
+  path.
 
 ### Fixed
 

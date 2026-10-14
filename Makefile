@@ -1,5 +1,6 @@
 # goarena - common developer tasks. Requires Go >= 1.27 and a C compiler
 # (cgo). On Windows run "make" from Git Bash / MSYS2 with MinGW-w64 GCC.
+# "make nocgo" checks the pure-Go fallback (CGO_ENABLED=0) as CI does.
 
 GO       ?= go
 PKGS     := ./...
@@ -7,7 +8,7 @@ RESULTS  := results
 EXAMPLES := quickstart typed-arena gc-pacing httpcache
 export CGO_ENABLED := 1
 
-.PHONY: all build vet fmt test race cover fuzz micro examples experiments clean
+.PHONY: all build vet fmt test race nocgo cover fuzz micro examples experiments clean
 
 all: vet test build
 
@@ -29,6 +30,12 @@ test:
 
 race:
 	$(GO) test -race -count=1 $(PKGS)
+
+# nocgo vets, builds and tests the pure-Go fallback (arena in the Go heap).
+nocgo:
+	CGO_ENABLED=0 $(GO) vet $(PKGS)
+	CGO_ENABLED=0 $(GO) build $(PKGS)
+	CGO_ENABLED=0 $(GO) test -count=1 $(PKGS)
 
 cover:
 	$(GO) test -count=1 -coverprofile=coverage.out $(PKGS)

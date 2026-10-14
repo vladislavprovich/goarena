@@ -16,6 +16,7 @@ import (
 	"log"
 	"runtime"
 
+	"github.com/vladislavprovich/goarena/arena"
 	"github.com/vladislavprovich/goarena/gcpace"
 	"github.com/vladislavprovich/goarena/gcstats"
 	"github.com/vladislavprovich/goarena/store"
@@ -86,6 +87,12 @@ func run(paced bool) result {
 func main() {
 	fmt.Printf("%d entries x %d B off-heap, %d requests allocating ~2 KiB of garbage each\n\n",
 		entries, valueSize, requests)
+
+	if !arena.OffHeap {
+		fmt.Println("note: built without cgo - the store lives in the Go heap, which already gives")
+		fmt.Println("the GC its headroom, so GCPacing has no effect and both variants behave alike.")
+		fmt.Println()
+	}
 
 	plain := run(false)
 	paced := run(true)

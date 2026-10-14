@@ -47,7 +47,10 @@ const (
 	readerStripes = 64
 )
 
-// Errors returned by Store methods.
+// Errors returned by Store methods. Methods may wrap them with details
+// (for example the sizes involved), so test for them with errors.Is:
+//
+//	if errors.Is(err, store.ErrNoMemory) { ... }
 var (
 	// ErrClosed is returned by methods called after Close.
 	ErrClosed = errors.New("store: closed")
@@ -57,7 +60,8 @@ var (
 	ErrTooLarge = errors.New("store: key or value too large")
 
 	// ErrNoMemory is returned when Config.MaxMemory is reached or the C
-	// allocator fails.
+	// allocator fails. The entry that could not be written is unchanged
+	// (an overwrite keeps the old value).
 	ErrNoMemory = errors.New("store: out of off-heap memory")
 )
 
@@ -90,9 +94,12 @@ type Config struct {
 	// paces as if the off-heap bytes were part of the Go heap, and an
 	// existing GOMEMLIMIT is treated as the budget for Go + off-heap
 	// memory. Recommended for services that allocate per request (see
-	// README, "Recommended configuration"). The pacer changes GOGC and
-	// GOMEMLIMIT; the previous values are restored when the last paced
+	// docs/GUIDE.md, "GC pacing and GOMEMLIMIT"). The pacer changes GOGC
+	// and GOMEMLIMIT; the previous values are restored when the last paced
 	// store is closed.
+	//
+	// In builds without cgo (arena.OffHeap is false) the store's memory is
+	// already part of the Go heap and GCPacing has no effect.
 	GCPacing bool
 }
 
@@ -120,6 +127,7 @@ type Store struct {
 	seed       maphash.Seed
 	arena      *arena.Arena
 	defaultTTL int64
+	maxMemory  int64 // Config.MaxMemory, for error messages
 	closed     atomic.Bool
 	closeMu    sync.Mutex
 	unpace     func() // unregisters from the GC pacer (GCPacing only)
@@ -154,6 +162,7 @@ func New(cfg Config) (*Store, error) {
 		seed:       maphash.MakeSeed(),
 		arena:      a,
 		defaultTTL: int64(cfg.DefaultTTL),
+		maxMemory:  cfg.MaxMemory,
 	}
 	for i := range s.shards {
 		sh := &s.shards[i]
@@ -162,17 +171,29 @@ func New(cfg Config) (*Store, error) {
 		t, err := newTable(a, capacity)
 		if err != nil {
 			a.Release()
-			return nil, ErrNoMemory
+			return nil, fmt.Errorf("%w: cannot allocate the initial index of %d shards x %d slots (%d bytes); lower Shards or InitialCapacity, or raise MaxMemory",
+				ErrNoMemory, n, capacity, int64(n)*int64(capacity)*slotSize)
 		}
 		sh.tab.Store(t)
 	}
-	if cfg.GCPacing {
+	if cfg.GCPacing && arena.OffHeap {
 		// The source captures only the arena, not the store, so that a
 		// forgotten store can still be finalized.
 		s.unpace = gcpace.Register(a.ReservedBytes)
 	}
 	runtime.SetFinalizer(s, finalizeStore)
 	return s, nil
+}
+
+// MustNew is like [New] but panics if the configuration is invalid. It is
+// meant for tests, examples and package-level initialisation with a
+// constant configuration.
+func MustNew(cfg Config) *Store {
+	s, err := New(cfg)
+	if err != nil {
+		panic(err)
+	}
+	return s
 }
 
 func finalizeStore(s *Store) {

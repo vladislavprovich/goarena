@@ -9,6 +9,19 @@
 // of a GC cycle. In exchange the program becomes responsible for the
 // lifetime of that memory.
 //
+// Most programs use this package through goarena's key-value store
+// (package store). Use it directly for typed, pointer-free data: large
+// slices of structs ([NewSlice]), individual values ([NewValue]) or
+// variable-sized blocks that are freed one by one ([Slab]).
+//
+// # Builds without cgo
+//
+// When the module is built with CGO_ENABLED=0, [OffHeap] is false and the
+// chunks are pointer-free blocks in the Go heap instead of C memory. The
+// API and its behaviour are unchanged, and the garbage collector still does
+// not scan the chunks, but they count towards GOGC's heap goal and
+// GOMEMLIMIT. See [OffHeap].
+//
 // # References
 //
 // Allocations are identified by a [Ref], a 64-bit integer that encodes a

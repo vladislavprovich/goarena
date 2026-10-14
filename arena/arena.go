@@ -29,6 +29,24 @@ const (
 	MaxAlloc = 1 << 31
 )
 
+// OffHeap reports whether arena memory lives outside of the Go heap.
+//
+// It is true in builds with cgo (CGO_ENABLED=1 and a C compiler, the
+// default on most systems): chunks come from the C allocator and are
+// invisible to the garbage collector, GOGC and GOMEMLIMIT.
+//
+// It is false in builds without cgo (CGO_ENABLED=0). Chunks are then
+// pointer-free []byte blocks in the Go heap, kept alive until they are
+// freed. Everything works the same way and the collector still does not
+// scan them, but the bytes count towards the heap goal and GOMEMLIMIT and
+// appear in heap profiles, so the off-heap benefits on heap size and GC
+// pacing are lost. Check it at start-up if your deployment relies on them:
+//
+//	if !arena.OffHeap {
+//		log.Print("goarena built without cgo: data is kept in the Go heap")
+//	}
+const OffHeap = cmem.OffHeap
+
 // Errors returned by Arena and Slab.
 var (
 	// ErrOutOfMemory is returned when an allocation would exceed

@@ -320,6 +320,9 @@ func TestCloseSemantics(t *testing.T) {
 }
 
 func TestGCPacing(t *testing.T) {
+	if !arena.OffHeap {
+		t.Skip("built without cgo: GCPacing has no effect (see TestGCPacingWithoutCgo)")
+	}
 	oldP := debug.SetGCPercent(100)
 	defer debug.SetGCPercent(oldP)
 	gcpace.SetDefaultConfig(gcpace.Config{Interval: time.Hour})
