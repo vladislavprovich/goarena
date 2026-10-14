@@ -6,4 +6,4 @@ package version
 
 // Module is the version of the goarena module (semantic versioning, without
 // the leading "v").
-const Module = "0.3.1"
+const Module = "0.3.2"

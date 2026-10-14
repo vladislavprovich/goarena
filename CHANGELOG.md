@@ -4,6 +4,19 @@ All notable changes to this project are documented in this file. The format
 follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.3.2] - 2026-10-14
+
+### Fixed
+
+- Lock-free reads on weakly ordered processors (arm64, e.g. Apple Silicon;
+  also ppc64, riscv64, loong64): the seqlock reader could validate an
+  unchanged sequence number while having copied bytes of a concurrent
+  overwrite, because an atomic load does not order earlier plain loads
+  there. Every validation is now preceded by a read fence
+  (`store/read_fence_weak_order.go`); on amd64 and 386 the fence is empty,
+  so performance there is unchanged. Found by `TestHotKeyReaders` in the
+  macOS CI job.
+
 ## [0.3.1] - 2026-10-14
 
 Repository and packaging release: no change to the public API or to the

@@ -103,6 +103,7 @@ documentation is in `doc.go` and runnable documentation examples in
 | | `entry_layout.go` | entry header and accessors (7.4) |
 | | `shard_lock.go` | writer lock (7.6) |
 | | `optimistic_read.go` | seqlock read path and in-flight reader counters (8) |
+| | `read_fence_strong_order.go`, `read_fence_weak_order.go` | read fence of the seqlock reader per memory model (8) |
 | | `store_read_operations.go` | `Get`, `GetInto`, `GetString`, `View`, `Has`, `Len`, `Range` |
 | | `store_write_operations.go` | `Set`, `SetWithTTL`, `SetString`, `Delete`, `DeleteString`, `EvictExpired` |
 | | `store_statistics.go` | `Stats`, `GoMemoryBudget` |
@@ -508,11 +509,20 @@ operations slower than 1 ms drops from 57 to 2 (max 1.24 ms).
       change means a writer intervened: the result is discarded and the
       read retried (up to 4 times, then the locked slow path).
    Writers bracket every mutation of slots or entry memory with `seq++`
-   (odd) ... `seq++` (even) under the writer lock. On amd64 (TSO) stores are
-   not reordered with other stores and loads not with other loads, and Go's
-   atomic operations are sequentially consistent, so a reader that observes
-   the same even `seq` before and after its reads observed no partial
-   mutation (standard seqlock argument).
+   (odd) ... `seq++` (even) under the writer lock. The writer's atomic
+   increments keep its plain stores between them. On the reader side every
+   validating load of `seq` is preceded by `readFence` (the `smp_rmb` of a
+   seqlock reader): the plain loads of slot and entry memory must complete
+   before `seq` is re-read. On amd64 and 386 (TSO) loads are never reordered
+   with earlier loads, so `readFence` is empty. On weakly ordered processors
+   (arm64, ppc64, riscv64, ...) an atomic load only has acquire semantics and
+   earlier plain loads may be satisfied after it; there `readFence` performs
+   a sequentially consistent read-modify-write on a stack-local word, whose
+   release half orders the earlier loads before the following load of `seq`
+   (`store/read_fence_*.go`). With that, a reader that observes the same
+   even `seq` before and after its reads observed no partial mutation
+   (standard seqlock argument). Without the fence the read-integrity tests
+   failed on Apple Silicon (v0.3.1, fixed in v0.3.2).
 4. **Why speculative reads cannot fault.** A torn read may follow a stale
    slot or a garbage ref, but only into memory that is still mapped:
    (a) arena chunks are released only by `Close`; (b) outgrown index tables

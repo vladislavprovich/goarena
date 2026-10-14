@@ -46,7 +46,9 @@ const (
 // garbage, which must be rejected rather than dereferenced blindly),
 // validates header and key against the sequence number before trusting the
 // value length, copies the value into dst when wantValue is set and
-// re-validates at the end. Memory it reads is never unmapped while the
+// re-validates at the end. Every validation is preceded by readFence, which
+// keeps the plain loads of entry memory before the validating load on
+// weakly ordered processors such as arm64. Memory it reads is never unmapped while the
 // store is open (see enterRead and docs/DESIGN.md, section 8).
 func (sh *shard) readOptimistic(h uint64, key, dst []byte, wantValue bool) ([]byte, int) {
 	seq := sh.seq.Load()
@@ -85,6 +87,7 @@ func (sh *shard) readOptimistic(h uint64, key, dst []byte, wantValue bool) ([]by
 				if fl&flagTTL != 0 {
 					exp = *(*int64)(unsafe.Add(p, entryHeaderSize))
 				}
+				readFence()
 				if sh.seq.Load() != seq { // header and key were consistent?
 					return dst, optRetry
 				}
@@ -96,6 +99,7 @@ func (sh *shard) readOptimistic(h uint64, key, dst []byte, wantValue bool) ([]by
 						dst = make([]byte, 0, vl)
 					}
 					dst = append(dst[:0], unsafe.Slice((*byte)(unsafe.Add(p, hl+kl)), vl)...)
+					readFence()
 					if sh.seq.Load() != seq {
 						return dst, optRetry
 					}
@@ -103,6 +107,7 @@ func (sh *shard) readOptimistic(h uint64, key, dst []byte, wantValue bool) ([]by
 				return dst, optHit
 			}
 		} else if hv == hashEmpty {
+			readFence()
 			if sh.seq.Load() != seq {
 				return dst, optRetry
 			}
