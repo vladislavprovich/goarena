@@ -6,6 +6,8 @@ import (
 	"runtime/debug"
 	"strings"
 	"testing"
+
+	"github.com/vladislavprovich/goarena/arena"
 )
 
 // restoreGC undoes the GC settings that some implementations apply to the
@@ -57,8 +59,11 @@ func TestImplementations(t *testing.T) {
 			if _, ok := c.Get(buf, []byte("absent")); ok {
 				t.Fatal("found absent key")
 			}
-			if strings.HasPrefix(name, "goarena") && c.OffHeapBytes() <= 0 {
+			if strings.HasPrefix(name, "goarena") && arena.OffHeap && c.OffHeapBytes() <= 0 {
 				t.Fatal("goarena must report off-heap bytes")
+			}
+			if strings.HasPrefix(name, "goarena") && !arena.OffHeap && c.OffHeapBytes() != 0 {
+				t.Fatal("goarena built without cgo holds no off-heap memory")
 			}
 			if !strings.HasPrefix(name, "goarena") && c.OffHeapBytes() != 0 {
 				t.Fatal("Go implementations hold no off-heap memory")

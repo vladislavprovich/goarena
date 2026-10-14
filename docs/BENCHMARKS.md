@@ -91,8 +91,8 @@ memory did not fit the 32 GB machine.
 ### Service that allocates per request
 
 Every operation additionally allocates a 1 KiB request object, so the GC
-runs continuously (see "Recommended configuration for services" in the
-[README](../README.md)).
+runs continuously (see [GC pacing and GOMEMLIMIT](GUIDE.md#gc-pacing-and-gomemlimit)
+in the user guide).
 
 | configuration | N = 5 M Mops/s | GC cycles/s | p99.9 | RSS |
 |---|---|---|---|---|

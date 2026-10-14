@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/vladislavprovich/goarena/arena"
 	"github.com/vladislavprovich/goarena/internal/cmem"
 )
 
@@ -76,6 +77,9 @@ func TestFinalizerSafetyNet(t *testing.T) {
 func TestOffHeapIsInvisibleToGC(t *testing.T) {
 	if testing.Short() {
 		t.Skip("allocates ~100 MB")
+	}
+	if !arena.OffHeap {
+		t.Skip("built without cgo: the arena is part of the Go heap by design")
 	}
 	// The store's fixed bookkeeping (shards, slabs with their class
 	// tables: ~2 MiB for 256 shards) is allocated by New; what must not

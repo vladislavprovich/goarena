@@ -8,6 +8,19 @@
 // the leak tests and the benchmark harness use to prove that every byte that
 // was obtained from C has been returned.
 //
+// # Builds without cgo
+//
+// With CGO_ENABLED=0 the package falls back to a pure-Go allocator
+// (go_heap_allocator.go, build tag !cgo; [OffHeap] is false): blocks are
+// pointer-free []byte allocations in the Go heap, kept reachable in an
+// internal registry until [Free] (the Go collector never moves heap
+// objects, so their addresses are stable). The API, the block header and
+// the live-block and byte counters are the same; CgoCalls stays 0. The
+// memory is not scanned by the collector, but it is part of the Go heap:
+// it counts towards GOGC's heap goal and GOMEMLIMIT. The Go runtime also
+// terminates the process instead of returning nil when it cannot satisfy
+// an allocation.
+//
 // # Block header
 //
 // Every block returned by [Malloc] and [Calloc] is preceded by a hidden

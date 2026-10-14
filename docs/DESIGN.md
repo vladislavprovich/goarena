@@ -23,6 +23,7 @@ Contents
 14. Optimisation round v0.1.0 -> v0.2.0 (measured effects)
 15. GC pacing for off-heap data (`gcpace`, v0.3.0)
 16. Iteration v0.2.0 -> v0.3.0 (measured effects)
+17. Builds without cgo and API additions (v0.4.0)
 
 ---
 
@@ -58,7 +59,7 @@ github.com/vladislavprovich/goarena
 ├── store                sharded off-heap KV store (index + entries in C memory) - main entry point
 ├── gcpace               opt-in GC pacer for off-heap data (GOGC / GOMEMLIMIT compensation)
 ├── gcstats              runtime/metrics + MemStats + OS process metrics
-├── internal/cmem        cgo bridge: malloc/calloc/free, counters (ONLY importer of "C")
+├── internal/cmem        cgo bridge: malloc/calloc/free, counters (ONLY importer of "C"); pure-Go fallback without cgo
 ├── internal/latency     log-linear latency histogram
 ├── internal/tsc         RDTSCP clock for latency sampling (Go assembly, amd64)
 ├── internal/version     module version written into benchmark results
@@ -97,19 +98,23 @@ documentation is in `doc.go` and runnable documentation examples in
 | | `slab_spans.go` | spans and donated regions, `Donate` (5.3) |
 | | `slab_statistics.go` | `ClassStats`, `SlabStats` (5.4) |
 | | `typed_allocation.go` | `NewValue`, `NewSlice`, `IsPointerFree`, pointer check (6) |
-| `store` | `store.go` | limits, errors, `Config`, `Store`, `New`, `Close`, finalizer |
+| `store` | `store.go` | limits, errors, `Config`, `Store`, `New`, `MustNew`, `Close`, finalizer |
 | | `shard.go` | shard layout, write brackets of the sequence number, shard selection, locked lookup (7.1, 7.2) |
 | | `hash_index.go` | open-addressing index, rehash, tombstones (7.3) |
 | | `entry_layout.go` | entry header and accessors (7.4) |
 | | `shard_lock.go` | writer lock (7.6) |
 | | `optimistic_read.go` | seqlock read path and in-flight reader counters (8) |
 | | `read_fence_strong_order.go`, `read_fence_weak_order.go` | read fence of the seqlock reader per memory model (8) |
-| | `store_read_operations.go` | `Get`, `GetInto`, `GetString`, `View`, `Has`, `Len`, `Range` |
-| | `store_write_operations.go` | `Set`, `SetWithTTL`, `SetString`, `Delete`, `DeleteString`, `EvictExpired` |
-| | `store_statistics.go` | `Stats`, `GoMemoryBudget` |
+| | `lock_free_reads_enabled.go`, `lock_free_reads_race_without_cgo.go` | switch of the seqlock read path (off only in race builds without cgo, 17) |
+| | `store_read_operations.go` | `Get`, `GetInto`, `GetString`, `View`, `Has`, `HasString`, `Len`, `Range` |
+| | `store_write_operations.go` | `Set`, `SetWithTTL`, `SetString`, `SetStringWithTTL`, `Delete`, `DeleteString`, `EvictExpired`, write errors with details |
+| | `cache_aside_operations.go` | `GetOrSet`, `GetOrLoad` (17) |
+| | `store_statistics.go` | `Stats`, `Stats.String`, `GoMemoryBudget` |
 | `gcpace` | `pacer_config.go`, `pacer.go`, `pacing_formulas.go`, `default_pacer.go` | `Config`/`Stats`; the `Pacer`; `Percent`/`GoLimit`; the process-wide default pacer (15) |
 | `gcstats` | `runtime_snapshot.go`, `snapshot_delta.go`, `process_metrics*.go` | `Snapshot`/`Read`/`Gauges`; `Delta`/`Between`; OS metrics per platform (`_linux`, `_windows`, `_other`) (9.1) |
-| `internal/cmem` | `c_allocator.go` | cgo preamble, `Malloc`/`Calloc`/`Free`, counters (3) |
+| `internal/cmem` | `allocator_accounting.go` | block header, counters, `SizeOf`, `ReadStats` (3) |
+| | `c_allocator.go` | build tag `cgo`: cgo preamble, `Malloc`/`Calloc`/`Free`/`Memclr`/`Noop`, `OffHeap = true` (3) |
+| | `go_heap_allocator.go` | build tag `!cgo`: pure-Go fallback with a block registry, `OffHeap = false` (17) |
 | `internal/latency` | `latency_histogram.go` | histogram, quantiles, buckets (9.2) |
 | `internal/tsc` | `timestamp_counter.go`, `timestamp_counter_amd64.go`/`.s`, `timestamp_counter_other.go` | calibration; RDTSCP; portable fallback (9.3) |
 | `cmd/goarena-bench` | `main.go`, `benchmark_run.go`, `workload_generator.go`, `implementations.go`, `experiment_catalog.go`, `experiment_driver.go`, `result_format.go`, `result_aggregation.go` | CLI; one run; key/value/garbage generators and phases; compared caches; experiment definitions; matrix driver; result JSON; CSV aggregation (10) |
@@ -522,7 +527,7 @@ operations slower than 1 ms drops from 57 to 2 (max 1.24 ms).
    (`store/read_fence_*.go`). With that, a reader that observes the same
    even `seq` before and after its reads observed no partial mutation
    (standard seqlock argument). Without the fence the read-integrity tests
-   failed on Apple Silicon (v0.3.1, fixed in v0.3.2).
+   failed on Apple Silicon (v0.3.1, fixed in v0.4.0).
 4. **Why speculative reads cannot fault.** A torn read may follow a stale
    slot or a garbage ref, but only into memory that is still mapped:
    (a) arena chunks are released only by `Close`; (b) outgrown index tables
@@ -549,6 +554,9 @@ operations slower than 1 ms drops from 57 to 2 (max 1.24 ms).
    detector does not instrument non-Go memory, and every Go-memory
    variable shared with readers (`seq`, `tab`, stripes, `closed`) is
    accessed atomically. `go test -race` passes, including the new tests.
+   In race builds without cgo the arena is Go-heap memory, which the race
+   detector does instrument; there the store disables the seqlock path and
+   every read takes the shard lock (section 17).
 7. *Bounds checks.* `Arena.Bytes` validates the chunk index, the offset and
    the length against the chunk size and panics like an out-of-range slice
    index; `TryPointer` performs the same checks without panicking.
@@ -921,3 +929,68 @@ class, pacing is off by default) and are reported from the v0.2.0 session.
   but unverified mechanism is a writer preempted inside its critical
   section (sequence number odd), which makes the readers of that shard spin
   and then fall back to the lock.
+
+## 17. Builds without cgo and API additions (v0.4.0)
+
+### 17.1 Pure-Go fallback of `internal/cmem`
+
+Before v0.4.0 a build with `CGO_ENABLED=0` failed with `undefined:
+cmem.Malloc`. Since cgo is disabled silently when no C compiler is found and
+always when cross-compiling, that made goarena unusable in such builds and
+produced an obscure error. v0.4.0 splits `internal/cmem` into the shared
+accounting (`allocator_accounting.go`: header, counters, `SizeOf`,
+`ReadStats`) and two back ends selected by build tags:
+
+* `c_allocator.go` (`cgo`): unchanged behaviour, `OffHeap = true`;
+* `go_heap_allocator.go` (`!cgo`): `Malloc(n)` allocates
+  `make([]byte, n + 16 + 8)`, aligns the 16-byte header to 16 bytes, writes
+  the same header and updates the same counters (`CgoCalls` stays 0). The
+  slice is stored in a registry (`map[uintptr][]byte` keyed by the user
+  pointer, under a mutex) until `Free`, which removes it; the GC reclaims
+  the block once nothing refers to it. `OffHeap = false`.
+
+Why this is sound: the Go collector never moves heap objects, so the address
+of a registered block is stable for its lifetime; `[]byte` is pointer-free,
+so the block is never scanned (the store's data still costs the collector no
+mark work); and the arena's chunk table holds the block base as an
+`unsafe.Pointer`, which in this mode is a real Go pointer and keeps the block
+alive as well. Interior pointers (`unsafe.Add` within a chunk) stay inside one
+allocation, which keeps `checkptr` satisfied. Differences that cannot be
+hidden: the blocks count towards GOGC's heap goal and `GOMEMLIMIT` and appear
+in heap profiles, and a failed allocation terminates the process (the Go
+runtime has no failing allocation) - `MaxBytes`/`MaxMemory` are checked before
+`Malloc` and keep working. `Free` of an unknown pointer panics without reading
+the header (it may belong to memory the GC already reclaimed), so a double
+free is always detected in this mode.
+
+`arena.OffHeap` re-exports the mode. The store adapts in three places: with
+`OffHeap == false`, `Stats.OffHeapBytes` is 0 (so `GoMemoryBudget` returns the
+whole budget), `Config.GCPacing` does not register with the pacer (the
+runtime already counts the bytes; registering them would double-count), and
+in race builds the seqlock read path is disabled (`lockFreeReads`, 8.6). The
+whole test suite runs in both modes; tests of C-specific properties (cgo call
+counts, Go-heap growth, allocation failure) check the mode. CI has a Linux
+job with `CGO_ENABLED=0` that also cross-compiles for windows/amd64,
+darwin/arm64 and linux/arm64.
+
+### 17.2 API additions
+
+* `GetOrSet(key, val)`: a lock-free `Get` first (hits cost the same as
+  `Get`); on a miss the shard lock is taken, the key looked up again and, if
+  still absent or expired, the entry is written by `storeLocked`. The check
+  and the write are therefore atomic per key. `set` keeps its own inlined copy
+  of `storeLocked`: calling the shared function from `Set` cost about 1.5 %
+  in the single-threaded `BenchmarkStoreSet` (190 vs 197 ns/op), measured
+  before the decision.
+* `GetOrLoad(key, load)`: `Get`; on a miss `load` runs without any lock, then
+  `GetOrSet`. Concurrent misses are not deduplicated (a single-flight group
+  would add a Go-heap map and per-key synchronisation to every miss; callers
+  that need it can wrap the call), but all callers return the first stored
+  value.
+* `MustNew`, `SetStringWithTTL`, `HasString`, `Stats.String` (one line, binary
+  units).
+* Errors: `ErrTooLarge` is returned as `*tooLargeError` (sizes; message built
+  only when printed, so `checkSize` stays inlinable), `ErrNoMemory` is wrapped
+  with the key and value sizes, the reserved bytes, `MaxMemory` and the chunk
+  size (memory is reserved in chunks, so a limit that is not a multiple of
+  `ChunkSize` is a common surprise). Both unwrap to the sentinel errors.

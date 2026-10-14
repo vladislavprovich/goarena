@@ -2,7 +2,9 @@
 
 An HTTP key-value service built on `github.com/vladislavprovich/goarena/store`
 with a self-contained live dashboard (`web/dashboard.html`, embedded into the
-binary).
+binary). It shows how a store is wired into a real service - routes,
+statistics, shutdown - and lets you watch throughput, latency, GC activity
+and memory live, side by side with a plain Go map backend.
 
 | Route | Description |
 |---|---|
@@ -20,7 +22,19 @@ go run ./examples/httpcache -selfload -backend gomap         # Go map, for compa
 ```
 
 Then open <http://127.0.0.1:8080/dashboard>. `-selfload` generates traffic
-in-process; run with `-h` for all flags.
+in-process; run with `-h` for all flags. Without `-selfload` the service
+waits for requests:
+
+```sh
+go run ./examples/httpcache
+curl -X PUT --data-binary @file.json http://127.0.0.1:8080/kv/doc1
+curl http://127.0.0.1:8080/kv/doc1
+curl http://127.0.0.1:8080/stats
+```
+
+Compare the two backends with the same flags: with `-backend gomap` the Go
+heap, GC CPU and GC pause figures grow with `-keys`; with the goarena backend
+the Go heap stays small and the data shows up as off-heap bytes.
 
 | File | Contents |
 |---|---|

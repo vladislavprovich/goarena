@@ -123,19 +123,21 @@ func (sh *shard) readOptimistic(h uint64, key, dst []byte, wantValue bool) ([]by
 func (s *Store) lookup(key, dst []byte, wantValue bool) ([]byte, bool) {
 	h := s.hash(key)
 	sh := s.shardFor(h)
-	if c := s.enterRead(); c != nil {
-		for try := 0; try < optimisticTries; try++ {
-			out, st := sh.readOptimistic(h, key, dst, wantValue)
-			if st != optRetry {
-				c.Add(-1)
-				if st == optHit {
-					return out, true
+	if lockFreeReads {
+		if c := s.enterRead(); c != nil {
+			for try := 0; try < optimisticTries; try++ {
+				out, st := sh.readOptimistic(h, key, dst, wantValue)
+				if st != optRetry {
+					c.Add(-1)
+					if st == optHit {
+						return out, true
+					}
+					return out[:0], false
 				}
-				return out[:0], false
+				dst = out
 			}
-			dst = out
+			c.Add(-1) // leave before blocking on the lock (Close waits for us)
 		}
-		c.Add(-1) // leave before blocking on the lock (Close waits for us)
 	}
 	sh.mu.Lock()
 	if s.closed.Load() {

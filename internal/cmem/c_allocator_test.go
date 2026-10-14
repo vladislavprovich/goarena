@@ -1,6 +1,7 @@
 package cmem
 
 import (
+	"strings"
 	"sync"
 	"testing"
 	"unsafe"
@@ -34,8 +35,14 @@ func TestMallocFreeAccounting(t *testing.T) {
 	if after.LiveBlocks != before.LiveBlocks || after.LiveBytes != before.LiveBytes {
 		t.Fatalf("leak: %+v -> %+v", before, after)
 	}
-	if after.CgoCalls < before.CgoCalls+2 || after.TotalFrees != before.TotalFrees+1 {
+	if after.TotalFrees != before.TotalFrees+1 {
+		t.Fatalf("free not counted: %+v", after)
+	}
+	if OffHeap && after.CgoCalls < before.CgoCalls+2 {
 		t.Fatalf("cgo calls not counted: %+v", after)
+	}
+	if !OffHeap && after.CgoCalls != before.CgoCalls {
+		t.Fatalf("cgo calls counted without cgo: %+v", after)
 	}
 }
 
@@ -66,6 +73,9 @@ func TestCallocZeroes(t *testing.T) {
 // cannot satisfy is reported as nil instead of crashing the process (cgo's
 // C.malloc would abort).
 func TestMallocFailureReturnsNil(t *testing.T) {
+	if !OffHeap {
+		t.Skip("built without cgo: the Go runtime aborts instead of failing an allocation")
+	}
 	before := ReadStats()
 	if p := Malloc(MaxSize); p != nil { // 1 TiB
 		Free(p)
@@ -113,11 +123,29 @@ func TestInvalidFreePanics(t *testing.T) {
 	buf[3] = magicFreed // simulate the header of a freed block
 	func() {
 		defer func() {
-			if r := recover(); r != "cmem: double free" {
+			r := recover()
+			if OffHeap && r != "cmem: double free" {
+				t.Fatalf("expected double free panic, got %v", r)
+			}
+			if s, _ := r.(string); !OffHeap && !strings.Contains(s, "double free") {
 				t.Fatalf("expected double free panic, got %v", r)
 			}
 		}()
 		Free(p)
+	}()
+	if OffHeap {
+		return // after C free the header may already be reused (best effort)
+	}
+	// Without cgo a real double free is always detected (registry).
+	q := Malloc(32)
+	Free(q)
+	func() {
+		defer func() {
+			if r, _ := recover().(string); !strings.Contains(r, "double free") {
+				t.Fatalf("expected double free panic, got %q", r)
+			}
+		}()
+		Free(q)
 	}()
 }
 
@@ -139,8 +167,12 @@ func TestConcurrentCounters(t *testing.T) {
 	if after.LiveBlocks != before.LiveBlocks || after.LiveBytes != before.LiveBytes {
 		t.Fatalf("leak under concurrency: %+v -> %+v", before, after)
 	}
-	if after.CgoCalls-before.CgoCalls != 8*1000*3 {
-		t.Fatalf("cgo calls = %d", after.CgoCalls-before.CgoCalls)
+	want := int64(8 * 1000 * 3)
+	if !OffHeap {
+		want = 0
+	}
+	if after.CgoCalls-before.CgoCalls != want {
+		t.Fatalf("cgo calls = %d, want %d", after.CgoCalls-before.CgoCalls, want)
 	}
 }
 
@@ -156,6 +188,9 @@ func BenchmarkGoCall(b *testing.B) {
 
 // BenchmarkCgoCall measures a call to an empty C function through cgo.
 func BenchmarkCgoCall(b *testing.B) {
+	if !OffHeap {
+		b.Skip("built without cgo")
+	}
 	for i := 0; i < b.N; i++ {
 		Noop()
 	}
@@ -163,6 +198,9 @@ func BenchmarkCgoCall(b *testing.B) {
 
 // BenchmarkCgoCallParallel measures concurrent cgo calls from all Ps.
 func BenchmarkCgoCallParallel(b *testing.B) {
+	if !OffHeap {
+		b.Skip("built without cgo")
+	}
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
 			Noop()

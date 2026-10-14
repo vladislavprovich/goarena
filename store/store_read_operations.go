@@ -50,6 +50,12 @@ func (s *Store) Has(key []byte) bool {
 	return ok
 }
 
+// HasString is Has for string keys.
+func (s *Store) HasString(key string) bool {
+	_, ok := s.lookup(stringBytes(key), nil, false)
+	return ok
+}
+
 // Len returns the number of entries, including expired entries that have
 // not been evicted yet.
 func (s *Store) Len() int {
@@ -65,9 +71,10 @@ func (s *Store) Len() int {
 
 // Range calls fn for every live entry, shard by shard, until fn returns
 // false. Each shard is locked while its entries are visited, so fn sees a
-// consistent view of one shard at a time (and writers of that shard wait). The key and value slices
-// alias off-heap memory and are valid only during the call; fn must not
-// call methods of the same Store.
+// consistent view of one shard at a time (and writers of that shard wait).
+// The key and value slices alias off-heap memory and are valid only during
+// the call; fn must not call methods of the same Store. Entries are visited
+// in no particular order.
 func (s *Store) Range(fn func(key, val []byte) bool) {
 	now := nowNano()
 	for i := range s.shards {

@@ -1,6 +1,11 @@
 package store
 
-import "github.com/vladislavprovich/goarena/internal/cmem"
+import (
+	"fmt"
+
+	"github.com/vladislavprovich/goarena/arena"
+	"github.com/vladislavprovich/goarena/internal/cmem"
+)
 
 // Stats is a snapshot of the store's size and memory usage. Shards are
 // visited one at a time, so the snapshot is not atomic across shards.
@@ -29,7 +34,10 @@ type Stats struct {
 	AvgProbeDistance float64 // mean displacement of entries from home slot
 	MaxProbeDistance uint64  // largest displacement
 
-	OffHeapBytes int64 // all C memory of the store (= ArenaReservedBytes)
+	// OffHeapBytes is all C memory of the store (= ArenaReservedBytes).
+	// It is 0 in builds without cgo (arena.OffHeap is false), where the
+	// arena memory is part of the Go heap.
+	OffHeapBytes int64
 
 	Sets    uint64 // successful writes
 	Deletes uint64 // successful deletes
@@ -80,7 +88,9 @@ func (s *Store) Stats() Stats {
 	st.ArenaChunks = as.Chunks
 	st.ArenaChunkMallocs = as.ChunkMallocs
 	st.IndexBytes = st.IndexSlots * slotSize
-	st.OffHeapBytes = st.ArenaReservedBytes
+	if arena.OffHeap {
+		st.OffHeapBytes = st.ArenaReservedBytes
+	}
 	if st.SlabInUseBytes > 0 {
 		st.InternalFragmentation = 1 - float64(st.EntryBytes)/float64(st.SlabInUseBytes)
 	}
@@ -106,10 +116,50 @@ func (s *Store) Stats() Stats {
 //	debug.SetGCPercent(-1)
 //	debug.SetMemoryLimit(s.GoMemoryBudget(budget))
 //
-// Call it again (or periodically) when the store grows significantly.
+// Call it again (or periodically) when the store grows significantly, or
+// let Config.GCPacing do it. In builds without cgo (arena.OffHeap is false)
+// OffHeapBytes is 0 and the whole budget is returned, because the store's
+// memory is then already counted by GOMEMLIMIT.
 func (s *Store) GoMemoryBudget(total int64) int64 {
 	if r := total - s.Stats().OffHeapBytes; r > 0 {
 		return r
 	}
 	return 0
+}
+
+// String returns a one-line, human-readable summary of the statistics,
+// for logs and debugging, for example:
+//
+//	1000 entries, 105.5 KiB of keys and values, 1.0 MiB reserved off-heap (index 32.0 KiB, load factor 0.49), 3.3% size-class waste; 1000 sets, 0 deletes, 0 expired
+//
+// Without cgo the memory is reported as "reserved in the Go heap (built
+// without cgo; index ...)".
+//
+// The format is meant for people and may change; read the fields for
+// monitoring. Use %#v to print every field.
+func (st Stats) String() string {
+	where := "off-heap ("
+	if !arena.OffHeap {
+		where = "in the Go heap (built without cgo; "
+	}
+	return fmt.Sprintf("%d entries, %s of keys and values, %s reserved %sindex %s, load factor %.2f), %.1f%% size-class waste; %d sets, %d deletes, %d expired",
+		st.Entries, formatBytes(st.KeyValueBytes), formatBytes(st.ArenaReservedBytes), where,
+		formatBytes(st.IndexBytes), st.LoadFactor, 100*st.InternalFragmentation,
+		st.Sets, st.Deletes, st.Expired)
+}
+
+// formatBytes formats n with a binary unit and one decimal (KiB and up).
+func formatBytes(n int64) string {
+	const unit = 1024
+	if n < unit && n > -unit {
+		return fmt.Sprintf("%d B", n)
+	}
+	v := float64(n)
+	for _, u := range []string{"KiB", "MiB", "GiB", "TiB"} {
+		v /= unit
+		if v < unit && v > -unit || u == "TiB" {
+			return fmt.Sprintf("%.1f %s", v, u)
+		}
+	}
+	return "" // unreachable
 }
