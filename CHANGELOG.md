@@ -4,11 +4,113 @@ All notable changes to this project are documented in this file. The format
 follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-10-14
+
+New, backward-compatible API (hence a minor release; 0.3.2 was never
+tagged and its fix is part of this release), a pure-Go build mode and a
+rewritten documentation set.
+
+### Added
+
+- Builds without cgo: with `CGO_ENABLED=0` (no C compiler, cross-compilation)
+  `internal/cmem` falls back to pointer-free `[]byte` blocks in the Go heap,
+  kept reachable in a registry until `Free` (`go_heap_allocator.go`, build tag
+  `!cgo`). The API and behaviour are unchanged and the GC still does not scan
+  the data, but it counts towards the heap goal and `GOMEMLIMIT`. Previously
+  such builds failed with `undefined: cmem.Malloc`.
+- `arena.OffHeap`: reports the mode (true with cgo).
+- `store.MustNew(Config) *Store`.
+- `Store.GetOrSet(key, val) (actual []byte, loaded bool, err error)`: atomic
+  set-if-absent; hits are lock-free.
+- `Store.GetOrLoad(key, load func() ([]byte, error)) ([]byte, error)`:
+  cache-aside helper; `load` runs without any lock, concurrent misses may
+  call it more than once and all return the first stored value; a value that
+  cannot be stored is returned together with the error.
+- `Store.SetStringWithTTL`, `Store.HasString`.
+- `Stats.String()`: one-line human-readable summary.
+- Runnable examples on pkg.go.dev for `New`, `MustNew`, `Get`, `GetInto`,
+  `View`, `SetWithTTL`, `EvictExpired`, `GetOrSet`, `GetOrLoad`, `Range`,
+  `Config.GCPacing`, `Stats.String`, error handling, `arena.NewValue`,
+  `Arena.Reset` and `arena.OffHeap`; expanded package documentation.
+- Documentation: `docs/GUIDE.md` (user guide), `docs/USE_CASES.md` (when to
+  use goarena and when not), `docs/FAQ.md`, `docs/TROUBLESHOOTING.md`,
+  `docs/README.md` (index); README rewritten as a landing page; DESIGN.md
+  section 17.
+- CI job `test (ubuntu-latest, CGO_ENABLED=0)`: vet, build, test, examples
+  and cross-compilation without a C toolchain; Makefile target `nocgo`.
+- `examples/quickstart` shows `GetOrLoad`, `GetOrSet`, the string helpers,
+  error details and `Stats.String`.
+
+### Changed
+
+- Write errors carry details and wrap the sentinel errors: `ErrTooLarge`
+  names the key or entry size and the limit, `ErrNoMemory` (also from `New`)
+  the sizes, the reserved bytes, `MaxMemory` and the chunk size. `errors.Is`
+  works as before; code that compared errors with `==` must switch to
+  `errors.Is`.
+- `Stats` implements `fmt.Stringer`, so `%v` and `%+v` print the summary;
+  use `%#v` to print every field.
+- Builds without cgo only (no change with cgo): `Stats.OffHeapBytes` is 0,
+  `GoMemoryBudget` returns the whole budget, `Config.GCPacing` has no effect,
+  and race-detector builds read under the shard lock instead of the seqlock
+  path.
+
+### Fixed
+
+- Lock-free reads on weakly ordered processors (arm64, e.g. Apple Silicon;
+  also ppc64, riscv64, loong64): the seqlock reader could validate an
+  unchanged sequence number while having copied bytes of a concurrent
+  overwrite, because an atomic load does not order earlier plain loads
+  there. Every validation is now preceded by a read fence
+  (`store/read_fence_weak_order.go`); on amd64 and 386 the fence is empty,
+  so performance there is unchanged. Found by `TestHotKeyReaders` in the
+  macOS CI job.
+
+## [0.3.1] - 2026-10-14
+
+Repository and packaging release: no change to the public API or to the
+behaviour of any package.
+
+### Added
+
+- Runnable examples, each with a short README: `examples/quickstart`
+  (store tour), `examples/typed-arena` (typed values and slices in an
+  `Arena`, `Slab` alloc/free) and `examples/gc-pacing` (GC cycles with and
+  without `store.Config.GCPacing`, measured with `gcstats`).
+- Continuous integration (`.github/workflows/ci.yml`): gofmt, `go vet`,
+  `go build`, `go test` on Linux, Windows and macOS, `go test -race` on
+  Linux and macOS, and a run of the examples.
+- `docs/BENCHMARKS.md` (methodology and results), `docs/DESIGN.md`
+  (formerly `DESIGN_NOTES.md`, now with a per-file source map) and
+  `docs/CONTRIBUTING.md`.
+- `internal/version`: the module version (`version.Module`) that
+  `goarena-bench` writes into its result documents.
+
+### Changed
+
+- Module path is `github.com/vladislavprovich/goarena`; `go.mod` declares
+  `go 1.27` (the minimum supported version).
+- Repository layout: no Go code in the root; programs import
+  `github.com/vladislavprovich/goarena/store` (or `.../arena`) directly.
+  Source files are split by responsibility and carry descriptive names
+  (for example `store/optimistic_read.go`, `store/store_write_operations.go`,
+  `arena/slab_size_classes.go`, `gcpace/default_pacer.go`,
+  `gcstats/process_metrics_windows.go`), with tests next to the code they
+  test. The `httpcache` dashboard moved to `examples/httpcache/web/`.
+- Makefile: `make build` builds the benchmark harness and every example
+  into `bin/`; new target `make examples` runs the examples.
+
+### Removed
+
+- Benchmark result files, measurement scripts and screenshot tooling from
+  the repository; `cmd/goarena-bench` reproduces every experiment and writes
+  to the git-ignored `results/` directory.
+
 ## [0.3.0] - 2026-10-13
 
 Focused iteration on the two v0.2.0 losses: request-garbage services
-(E9/E10) and memory for 256 B - 4 KiB values (E4). The v0.2.0 results are
-preserved in `results/v2/`.
+(E9/E10) and memory for 256 B - 4 KiB values (E4). See
+[docs/BENCHMARKS.md](docs/BENCHMARKS.md).
 
 ### Added
 
@@ -43,8 +145,7 @@ preserved in `results/v2/`.
 ## [0.2.0] - 2026-10-13
 
 Optimisation round driven by the v0.1.0 measurements (memory versus the
-pointer-free Go-heap baseline, tail latency under hot keys). The v0.1.0
-results are preserved in `results/v1/`.
+pointer-free Go-heap baseline, tail latency under hot keys).
 
 ### Changed
 
@@ -84,7 +185,6 @@ results are preserved in `results/v1/`.
   memory-budget guard that records skipped runs), E9 (service with request
   garbage) and E10 (container memory budget via `debug.SetMemoryLimit`),
   new aggregated metrics (read/write p99.9, STW ms/s, garbage settings).
-- `scripts/run_all_v2.sh`: the complete v2 benchmark session.
 
 ## [0.1.0] - 2026-10-13
 
@@ -120,5 +220,4 @@ results are preserved in `results/v1/`.
   live dashboard, in-process load generator and a `gomap` backend for
   comparison.
 - Unit tests, differential fuzz test, concurrency stress tests, leak and
-  finalizer tests, examples, micro-benchmarks, PowerShell/Python scripts and
-  `tools/term2png.py`.
+  finalizer tests, examples and micro-benchmarks.

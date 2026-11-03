@@ -20,6 +20,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -60,7 +62,7 @@ Use "goarena-bench <command> -h" for the flags of a command.`)
 }
 
 func runFlags(fs *flag.FlagSet, o *options, out *string) {
-	fs.StringVar(&o.Impl, "impl", "goarena", "implementation: gomap, gomap-gogc400, syncmap, gobytes, goarena")
+	fs.StringVar(&o.Impl, "impl", "goarena", "implementation: gomap, gomap-gogc400, syncmap, gobytes, goarena, goarena-paced, goarena-evict, ... (see list)")
 	fs.IntVar(&o.N, "n", 1_000_000, "number of entries to populate")
 	fs.IntVar(&o.ValueSize, "value", 128, "value size in bytes")
 	fs.IntVar(&o.Goroutines, "goroutines", 16, "number of worker goroutines")
@@ -78,6 +80,11 @@ func runFlags(fs *flag.FlagSet, o *options, out *string) {
 	fs.IntVar(&o.MemLimitMiB, "memlimit", 0, "soft memory limit in MiB (debug.SetMemoryLimit), 0 = none")
 	fs.Float64Var(&o.GarbageRate, "garbage-rate", 0, "share of operations that allocate a short-lived request object (E9/E10)")
 	fs.IntVar(&o.GarbageBytes, "garbage-bytes", 1536, "payload size of a simulated request object")
+	fs.StringVar(&o.Profile, "profile", "steady", "load profile of the measured phase: steady, ramp, spike or sweep-goroutines")
+	fs.IntVar(&o.MaxMemMiB, "maxmem", 0, "goarena: store.Config.MaxMemory in MiB (required by goarena-evict), 0 = unlimited")
+	fs.BoolVar(&o.FillOnMiss, "fill-on-miss", false, "store a value after every read miss (cache-aside refill)")
+	fs.BoolVar(&o.Progress, "progress", false, "write one JSON progress line per second to stderr")
+	fs.StringVar(&o.ProgressOut, "progress-out", "", "write the progress lines to this file instead of stderr (implies -progress)")
 	fs.BoolVar(&o.GCTrace, "gctrace", false, "mark the result as traced (the driver sets GODEBUG=gctrace=1)")
 	fs.StringVar(out, "out", "", "write the JSON result to this file instead of stdout")
 	fs.StringVar(&cpuProfile, "cpuprofile", "", "write a CPU profile of the measured phase to this file")
@@ -120,7 +127,7 @@ func cmdRun(args []string, stdout io.Writer) error {
 func cmdMatrix(args []string, stdout io.Writer) error {
 	fs := flag.NewFlagSet("matrix", flag.ContinueOnError)
 	var m matrixOptions
-	exps := fs.String("exp", "E1", "comma-separated experiments (E1,E1b,E2,E4,E5,E6,E7,E8,E9,E10 or all)")
+	exps := fs.String("exp", "E1", "comma-separated experiments (E1,E1b,E2,E4,E5,E6,E7,E8,E9,E10,E1r,E1d,E1t,EV,EP or all)")
 	out := fs.String("out", "results/raw", "directory for JSON results")
 	dry := fs.Bool("dry", false, "print the commands without running them")
 	force := fs.Bool("force", false, "re-run even if the result file exists")
@@ -132,8 +139,28 @@ func cmdMatrix(args []string, stdout io.Writer) error {
 	fs.Float64Var(&m.Scale, "scale", 1, "scale factor for N (smoke tests)")
 	fs.IntVar(&m.E10MemLimitMiB, "e10-memlimit", 0, "GOMEMLIMIT in MiB for E10 (1.25 x gobytes RSS at N=5M)")
 	fs.Float64Var(&m.MemBudgetGiB, "mem-budget", 24, "skip E8 runs whose projected private memory exceeds this (GiB)")
+	implsFilter := fs.String("impls", "", "comma-separated implementations: run only these")
+	onlyN := fs.String("only-n", "", "comma-separated N values: run only these")
+	fs.BoolVar(&m.Tail16, "tail16", false, "E1t: also run 16 worker goroutines")
 	if err := fs.Parse(args); err != nil {
 		return err
+	}
+	for _, s := range strings.Split(*implsFilter, ",") {
+		if s = strings.TrimSpace(s); s != "" {
+			if _, ok := impls[s]; !ok {
+				return fmt.Errorf("unknown implementation %q in -impls", s)
+			}
+			m.Impls = append(m.Impls, s)
+		}
+	}
+	for _, s := range strings.Split(*onlyN, ",") {
+		if s = strings.TrimSpace(s); s != "" {
+			n, err := strconv.Atoi(s)
+			if err != nil {
+				return fmt.Errorf("-only-n: %v", err)
+			}
+			m.OnlyN = append(m.OnlyN, n)
+		}
 	}
 	sel, err := selectExperiments(*exps)
 	if err != nil {

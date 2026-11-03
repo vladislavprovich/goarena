@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>goarena Benchmark Lab</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='1' y='8' width='3' height='7' fill='%234C72B0'/%3E%3Crect x='6' y='4' width='3' height='11' fill='%2355A868'/%3E%3Crect x='11' y='1' width='3' height='14' fill='%233B7D4C'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="topbar noprint">
+  <a class="brand" href="#/overview">go<span>arena</span> <small data-i18n="brand.small">Benchmark Lab</small></a>
+  <nav id="nav">
+    <a href="#/overview" data-page="overview" data-i18n="nav.overview">Overview</a>
+    <a href="#/run" data-page="run" data-i18n="nav.run">Run</a>
+    <a href="#/sweep" data-page="sweep" data-i18n="nav.sweep">Sweep</a>
+    <a href="#/results" data-page="results" data-i18n="nav.results">Results</a>
+    <a href="#/report" data-page="report" data-i18n="nav.report">Report</a>
+  </nav>
+  <div class="meta">
+    <span id="busy-badge" class="badge hidden">running</span>
+    <span id="conn-dot" class="dot off"></span><span id="conn-text" data-i18n="conn.connecting">connecting&hellip;</span>
+    <div class="seg lang-switch" id="lang-switch" role="group" aria-label="Language / Мова">
+      <button data-v="uk" title="Українська" lang="uk">УКР</button><button data-v="en" title="English" lang="en">EN</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- ============================== Overview ============================== -->
+<section id="page-overview" class="page">
+  <div class="hero card">
+    <div>
+      <h1 data-i18n="ov.h1">goarena Benchmark Lab</h1>
+      <p class="lead" data-i18n-html="ov.lead">Runs the <code>goarena-bench</code> harness on this machine - one OS process per implementation -
+        streams its per-second metrics to live charts, finds the points where an implementation drops in a
+        parameter sweep, and compares the results with the measurements of earlier goarena versions.</p>
+      <div class="hero-links">
+        <a class="btn primary" href="#/run" data-i18n="ov.goRun">Run a scenario</a>
+        <a class="btn" href="#/sweep" data-i18n="ov.goSweep">Sweep a parameter</a>
+        <a class="btn" href="#/results" data-i18n="ov.goResults">Results &amp; history</a>
+        <a class="btn" href="#/report" data-i18n="ov.goReport">Printable report</a>
+      </div>
+    </div>
+  </div>
+  <div class="grid3">
+    <div class="card"><h2 data-i18n="ov.machine">Machine</h2><dl id="ov-machine" class="kv"></dl></div>
+    <div class="card"><h2><span data-i18n="ov.harness">Harness</span> <small>goarena-bench</small></h2><dl id="ov-bench" class="kv"></dl>
+      <div class="row-actions"><button id="ov-rebuild" class="btn small">Rebuild harness</button></div>
+      <pre id="ov-buildlog" class="log small hidden"></pre></div>
+    <div class="card"><h2 data-i18n="ov.docs">Documents</h2><ul id="ov-docs" class="links"></ul>
+      <h3 data-i18n="ov.pages">Pages</h3>
+      <ul class="links" data-i18n-html="ov.pagesList">
+        <li><a href="#/run">Run</a> - presets, settings, live charts of a session</li>
+        <li><a href="#/sweep">Sweep</a> - one parameter over several values, knee detection</li>
+        <li><a href="#/results">Results</a> - comparison table, latency CDF, history, version comparison</li>
+        <li><a href="#/report">Report</a> - printable summary of a session (Save as PDF)</li>
+      </ul></div>
+  </div>
+  <div class="card"><h2 data-i18n="ov.impls">Implementations</h2><div id="ov-impls" class="impl-grid"></div></div>
+  <div class="card help">
+    <h2 data-i18n="help.h2">How to read the charts</h2>
+    <div class="grid2 help-grid">
+      <div>
+        <h3 data-i18n="help.liveH">Live charts (Run)</h3>
+        <ul data-i18n-html="help.live">
+          <li>The x axis is <b>seconds since the start of the measured phase</b> of each run, so the
+            implementations, which run one after another, are overlaid. Switch to <b>Full run</b> to include the
+            populate and warm-up phases.</li>
+          <li><b>Throughput</b> - million operations per second in each 1-s interval.</li>
+          <li><b>Latency</b> - p99 (solid) and p99.9 (dashed) of the sampled operations in each interval, in
+            microseconds; use the log scale when one implementation has a much heavier tail.</li>
+          <li><b>GC CPU</b> - share of the available CPU spent by the garbage collector.</li>
+          <li><b>Memory</b> - solid: process RSS, dashed: Go heap, dotted: off-heap (C) memory, MiB.
+            goarena keeps its data off-heap, so its Go heap stays near zero.</li>
+          <li>Vertical lines mark stages of a load profile (ramp / spike) or phases in the full view.</li>
+          <li>Hover a chart to see the values of all series at that time; click a legend entry to hide a series.</li>
+        </ul>
+      </div>
+      <div>
+        <h3 data-i18n="help.sweepH">Sweeps, results and history</h3>
+        <ul data-i18n-html="help.sweep">
+          <li>A sweep plots a metric against the swept parameter. <span class="knee-ring"></span> red rings mark
+            <b>knees</b>: throughput falls by more than 15 %, p99.9 more than doubles, GC CPU rises by more than
+            10 percentage points, or (goroutines) the scaling efficiency of a step falls below half of the
+            previous step's.</li>
+          <li>The comparison table highlights the best value of every column in <b>bold green</b>; the small
+            factor below each value is the ratio to the selected baseline implementation.</li>
+          <li>The latency CDF shows which share of the operations finished within a time; the CCDF (tail view)
+            shows the share that took longer, on a log scale - the lower the curve, the thinner the tail.</li>
+          <li>The memory guard projects the peak RSS of every run before it starts and refuses runs above
+            min(75 % of RAM, RAM - 6 GiB).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================ Run ================================= -->
+<section id="page-run" class="page hidden">
+  <div class="card presets-card">
+    <h2 data-i18n-html="run.presets">Scenario presets <small>fill the form; sweep presets open the Sweep page</small></h2>
+    <div id="preset-list" class="preset-list"></div>
+  </div>
+  <div class="layout" id="run-layout">
+    <aside class="side">
+      <div class="card"><h2 data-i18n="run.settings">Settings</h2><div id="run-form"></div></div>
+      <div class="card"><h2 data-i18n-html="run.guard">Memory guard <small>projected peak RSS</small></h2><div id="run-estimate" class="estimate"></div></div>
+      <div class="card actions-card">
+        <button id="run-start" class="btn primary" data-i18n="run.start">Start session</button>
+        <button id="run-cancel" class="btn danger" disabled data-i18n="btn.cancel">Cancel</button>
+      </div>
+    </aside>
+    <div class="main-col dash">
+      <div class="dash-head card">
+        <button id="run-toggle" class="btn small" title="show / hide the settings" data-i18n-title="btn.toggleTitle">&#9664; Settings</button>
+        <h1 class="dash-title">go<span>arena</span> &middot; <span id="dash-session">live run</span></h1>
+        <span id="dash-impl" class="badge impl-badge">&ndash;</span>
+        <div id="run-status" class="status-line"></div>
+        <div class="dash-meta"><span id="dash-dot" class="dot off"></span><span id="dash-state">idle</span></div>
+      </div>
+      <section id="run-kpis" class="kpis7"></section>
+      <div id="run-strip" class="strip"></div>
+      <div class="toolbar">
+        <div class="seg" id="run-xmode">
+          <button data-v="measure" class="on" data-i18n="run.xMeasure">Measured phase</button><button data-v="full" data-i18n="run.xFull">Full run</button>
+        </div>
+        <div class="seg" id="run-latscale">
+          <button data-v="lin" data-i18n="run.latLin">Linear latency</button><button data-v="log" class="on" data-i18n="run.latLog">Log latency</button>
+        </div>
+        <span class="hint" data-i18n="run.hint">hover for values &middot; click legend entries to hide series</span>
+      </div>
+      <section class="charts3">
+        <div class="card chart-card"><h2 data-i18n-html="ch.ops">Throughput <small>ops/s</small></h2><canvas id="c-ops"></canvas><div class="legend" id="l-ops"></div></div>
+        <div class="card chart-card"><h2 data-i18n-html="ch.lat">Operation latency <small>&micro;s &middot; p50 dotted, p99 solid, p99.9 dashed</small></h2><canvas id="c-lat"></canvas><div class="legend" id="l-lat"></div></div>
+        <div class="card chart-card"><h2 data-i18n-html="ch.gc">GC CPU <small>% of available CPU</small></h2><canvas id="c-gc"></canvas><div class="legend" id="l-gc"></div></div>
+        <div class="card chart-card"><h2 data-i18n-html="ch.mem">Memory <small>MiB &middot; RSS solid, Go heap dashed, off-heap dotted</small></h2><canvas id="c-mem"></canvas><div class="legend" id="l-mem"></div></div>
+        <div class="card chart-card"><h2><span id="ent-title">Entries</span> <small id="ent-sub">count</small>
+          <span class="seg mini hidden" id="ent-mode"><button data-v="entries" class="on" data-i18n="ent.btnEntries">Entries</button><button data-v="hit" data-i18n="ent.btnHit">Hit ratio</button></span></h2>
+          <canvas id="c-ent"></canvas><div class="legend" id="l-ent"></div></div>
+        <div class="card chart-card"><h2 data-i18n-html="ch.cyc">GC activity <small>cycles/s solid &middot; STW ms/s dashed</small></h2><canvas id="c-cyc"></canvas><div class="legend" id="l-cyc"></div></div>
+      </section>
+      <footer class="dash-foot" data-i18n-html="run.foot">Data from <code>goarena-bench -progress</code> (one line per interval of every run), streamed over
+        <code>/api/events</code>; implementations run one after another, each in its own process, and are overlaid by the time since the start of
+        their measured phase. Self-contained page, no external resources.</footer>
+      <div class="card"><h2 data-i18n-html="run.log">Log <small>harness output (stderr)</small></h2><pre id="run-log" class="log"></pre></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================== Sweep ================================ -->
+<section id="page-sweep" class="page hidden">
+  <div class="card presets-card">
+    <h2 data-i18n="sw.presets">Sweep presets</h2>
+    <div id="sweep-preset-list" class="preset-list"></div>
+  </div>
+  <div class="layout" id="sweep-layout">
+    <aside class="side">
+      <div class="card">
+        <h2 data-i18n="sw.param">Swept parameter</h2>
+        <div class="form">
+          <label class="field"><span data-i18n="sw.paramLabel">Parameter</span><select id="sw-param"></select></label>
+          <label class="field wide"><span><span data-i18n="sw.values">Values</span> <small id="sw-values-hint">comma-separated</small></span><input id="sw-values" type="text" spellcheck="false"></label>
+        </div>
+      </div>
+      <div class="card"><h2 data-i18n="sw.base">Base settings</h2><div id="sweep-form"></div></div>
+      <div class="card"><h2 data-i18n-html="sw.guard">Memory guard <small>largest run per implementation</small></h2><div id="sweep-estimate" class="estimate"></div></div>
+      <div class="card actions-card">
+        <button id="sw-start" class="btn primary" data-i18n="sw.start">Start sweep</button>
+        <button id="sw-cancel" class="btn danger" disabled data-i18n="btn.cancel">Cancel</button>
+      </div>
+    </aside>
+    <div class="main-col">
+      <div class="card status-card">
+        <div class="status-row"><button id="sw-toggle" class="btn small" title="show / hide the settings" data-i18n-title="btn.toggleTitle">&#9664; Settings</button>
+          <div id="sw-status" class="status-line"></div></div>
+        <div class="sweep-top">
+          <div id="sw-matrix" class="table-wrap"></div>
+          <div class="knees-box"><h2 data-i18n-html="sw.knees">Where it drops <small>knees between consecutive steps</small></h2><ul id="sw-knees" class="knees"></ul></div>
+        </div>
+      </div>
+      <div class="charts sweep-charts">
+        <div class="card chart-card"><h2 data-i18n-html="sch.ops">Throughput <small>Mops/s</small></h2><canvas id="s-ops"></canvas><div class="legend" id="sl-ops"></div></div>
+        <div class="card chart-card"><h2 data-i18n-html="sch.p99">Latency p99 <small>&micro;s</small></h2><canvas id="s-p99"></canvas><div class="legend" id="sl-p99"></div></div>
+        <div class="card chart-card"><h2 data-i18n-html="sch.p999">Latency p99.9 <small>&micro;s, log</small></h2><canvas id="s-p999"></canvas><div class="legend" id="sl-p999"></div></div>
+        <div class="card chart-card"><h2 data-i18n-html="sch.gc">GC CPU <small>%</small></h2><canvas id="s-gc"></canvas><div class="legend" id="sl-gc"></div></div>
+        <div class="card chart-card"><h2 data-i18n-html="sch.rss">Process RSS <small>MiB</small></h2><canvas id="s-rss"></canvas><div class="legend" id="sl-rss"></div></div>
+      </div>
+      <div class="card"><h2 data-i18n="sw.log">Log</h2><pre id="sw-log" class="log"></pre></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== Results =============================== -->
+<section id="page-results" class="page hidden">
+  <div class="card toolbar-card">
+    <label class="inline"><span data-i18n="res.session">Session</span><select id="res-session"></select></label>
+    <label class="inline"><span data-i18n="res.baseline">Baseline</span><select id="res-baseline"></select></label>
+    <div class="spacer"></div>
+    <a id="res-export-json" class="btn small" href="#" data-i18n="btn.exportJson">Export JSON</a>
+    <a id="res-export-csv" class="btn small" href="#" data-i18n="btn.exportCsv">Export CSV</a>
+    <a id="res-report" class="btn small" href="#/report" data-i18n="nav.report">Report</a>
+    <button id="res-delete" class="btn small danger" data-i18n="btn.delete">Delete</button>
+  </div>
+  <div id="res-empty" class="card empty hidden" data-i18n-html="res.empty">No session yet - start one on the <a href="#/run">Run</a> or <a href="#/sweep">Sweep</a> page.</div>
+  <div id="res-body">
+    <div class="card"><h2 id="res-title">Session</h2><div id="res-config" class="chips"></div></div>
+    <div class="card"><h2 data-i18n-html="res.cmp">Comparison <small>best value per column in bold green &middot; factor = ratio to the baseline</small></h2><div id="res-table" class="table-wrap"></div></div>
+    <div id="res-sweep-card" class="card hidden">
+      <h2><span data-i18n="res.sweep">Sweep</span> <small id="res-sweep-sub"></small></h2>
+      <div class="toolbar"><div class="seg" id="res-sweep-metric"></div></div>
+      <div class="grid2"><div><canvas id="res-sweep-chart" class="tall"></canvas><div class="legend" id="res-sweep-legend"></div></div>
+      <div><h3 data-i18n="res.drops">Where it drops</h3><ul id="res-knees" class="knees"></ul></div></div>
+    </div>
+    <div class="grid2">
+      <div class="card chart-card"><h2><span data-i18n="res.cdf">Latency distribution</span> <small id="res-cdf-sub" data-i18n="res.cdfSub">CDF of the measured phase</small></h2>
+        <div class="toolbar"><div class="seg" id="res-cdf-mode"><button data-v="cdf" class="on">CDF</button><button data-v="ccdf" data-i18n="res.ccdf">Tail (CCDF)</button></div></div>
+        <canvas id="res-cdf"></canvas><div class="legend" id="res-cdf-legend"></div></div>
+      <div class="card chart-card"><h2 data-i18n-html="res.tl">Throughput over time <small>measured phase, Mops/s</small></h2>
+        <div class="toolbar"><div class="seg" id="res-tl-metric"><button data-v="ops" class="on" data-i18n="sm.ops">Throughput</button><button data-v="p999">p99.9</button><button data-v="gc" data-i18n="sm.gc">GC CPU</button><button data-v="rss">RSS</button></div></div>
+        <canvas id="res-tl"></canvas><div class="legend" id="res-tl-legend"></div></div>
+    </div>
+    <div id="res-stages" class="card hidden"></div>
+  </div>
+  <div class="card"><h2><span data-i18n="res.history">History</span> <small id="hist-dir"></small></h2><div id="hist-table" class="table-wrap"></div></div>
+  <div class="card">
+    <h2 data-i18n-html="res.versions">Version comparison <small>historical results of goarena v0.1 / v0.2 / v0.3 / v0.4 / demo, repeats averaged</small></h2>
+    <div class="toolbar">
+      <label class="inline"><span data-i18n="res.scenario">Scenario</span><select id="cmp-scenario"></select></label>
+      <label class="inline"><span data-i18n="res.metric">Metric</span><select id="cmp-metric"></select></label>
+      <div class="spacer"></div>
+      <button id="cmp-reload" class="btn small" data-i18n="res.rescan">Rescan results</button>
+      <a id="cmp-export-csv" class="btn small" href="#" data-i18n="btn.exportCsv">Export CSV</a>
+      <a id="cmp-export-json" class="btn small" href="#" data-i18n="btn.exportJson">Export JSON</a>
+    </div>
+    <p id="cmp-desc" class="hint"></p>
+    <div class="grid2">
+      <div id="cmp-table" class="table-wrap"></div>
+      <div><canvas id="cmp-bars" class="tall"></canvas><div class="legend" id="cmp-legend"></div></div>
+    </div>
+    <div id="cmp-sources" class="hint"></div>
+  </div>
+</section>
+
+<!-- =============================== Report =============================== -->
+<section id="page-report" class="page hidden">
+  <div class="card toolbar-card noprint">
+    <label class="inline"><span data-i18n="res.session">Session</span><select id="rep-session"></select></label>
+    <div class="spacer"></div>
+    <button id="rep-print" class="btn primary" data-i18n="rep.print">Print / Save as PDF</button>
+  </div>
+  <div id="report" class="report"></div>
+</section>
+</main>
+
+<div id="tip-layer"></div>
+<div id="toast" class="toast hidden"></div>
+<script src="app.js"></script>
+</body>
+</html>

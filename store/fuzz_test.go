@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/savokh/goarena/internal/cmem"
+	"github.com/vladislavprovich/goarena/internal/cmem"
 )
 
 // FuzzStore is a differential test: it interprets the fuzz input as a

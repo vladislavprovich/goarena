@@ -6,7 +6,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/savokh/goarena/internal/cmem"
+	"github.com/vladislavprovich/goarena/internal/cmem"
 )
 
 func mustPanic(t *testing.T, substr string, f func()) {
@@ -249,6 +249,23 @@ func TestConcurrentAlloc(t *testing.T) {
 					t.Fatalf("goroutine %d data corrupted", g)
 				}
 			}
+		}
+	}
+}
+
+func TestTryPointer(t *testing.T) {
+	a := MustNew(Config{ChunkSize: 4096})
+	defer a.Release()
+	r, _ := a.Alloc(64)
+	if p, ok := a.TryPointer(r, 64); !ok || p != a.Pointer(r) {
+		t.Fatal("valid ref rejected")
+	}
+	for _, c := range []struct {
+		ref Ref
+		n   int
+	}{{Nil, 1}, {makeRef(9, 0), 1}, {r, 5000}, {r, -1}} {
+		if _, ok := a.TryPointer(c.ref, c.n); ok {
+			t.Fatalf("TryPointer(%v, %d) accepted", c.ref, c.n)
 		}
 	}
 }

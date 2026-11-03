@@ -16,5 +16,5 @@ testdata/fuzz/
 .DS_Store
 Thumbs.db
 
-# temporary benchmark files
+# benchmark metrics are kept in results/ on this branch (test-no-prod-ready)
 *.json.tmp

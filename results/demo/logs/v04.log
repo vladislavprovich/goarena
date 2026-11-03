@@ -1,0 +1,9 @@
+goarena        n=10000000  v=128   g=16  ops/s=22080465     p50=427ns p99=1839ns p999=8319ns max=23.63ms gc=0 gcCPU=0.00% heap=4MiB rss=1802MiB offheap=1856MiB populate=0.92s
+goarena        n=10000000  v=128   g=16  ops/s=29997488     p50=387ns p99=887ns p999=3039ns max=27.47ms gc=0 gcCPU=0.00% heap=4MiB rss=1798MiB offheap=1856MiB populate=0.61s
+goarena        n=10000000  v=128   g=16  ops/s=29199869     p50=403ns p99=951ns p999=4543ns max=30.60ms gc=0 gcCPU=0.00% heap=4MiB rss=1797MiB offheap=1856MiB populate=0.56s
+goarena        n=5000000   v=128   g=16  ops/s=51380507     p50=149ns p99=743ns p999=1487ns max=15.28ms gc=0 gcCPU=0.00% heap=4MiB rss=906MiB offheap=960MiB populate=0.25s
+goarena        n=5000000   v=128   g=16  ops/s=33338243     p50=379ns p99=1039ns p999=3359ns max=3.64ms gc=0 gcCPU=0.00% heap=4MiB rss=905MiB offheap=960MiB populate=0.24s
+goarena-paced  n=5000000   v=128   g=16  ops/s=10248693     p50=1039ns p99=3231ns p999=58879ns max=35.94ms gc=172 gcCPU=0.45% heap=1001MiB rss=2006MiB offheap=960MiB populate=0.23s
+goarena-paced  n=5000000   v=128   g=16  ops/s=10676470     p50=1039ns p99=2911ns p999=48639ns max=24.63ms gc=179 gcCPU=0.24% heap=924MiB rss=2019MiB offheap=960MiB populate=0.23s
+goarena-paced  n=5000000   v=128   g=16  ops/s=10583025     p50=1039ns p99=3231ns p999=55807ns max=39.25ms gc=177 gcCPU=0.21% heap=881MiB rss=2035MiB offheap=960MiB populate=0.24s
+goarena        n=10000000  v=128   g=16  ops/s=37848391     p50=339ns p99=823ns p999=1519ns max=12.86ms gc=0 gcCPU=0.00% heap=4MiB rss=1797MiB offheap=1856MiB populate=0.48s

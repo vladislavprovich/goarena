@@ -1,23 +1,30 @@
-# goarena - common developer tasks. Requires Go >= 1.22 and a C compiler
-# (cgo). On Windows use build.ps1 or run "make" from Git Bash / MSYS2.
+# goarena - common developer tasks. Requires Go >= 1.27 and a C compiler
+# (cgo). On Windows run "make" from Git Bash / MSYS2 with MinGW-w64 GCC.
+# "make nocgo" checks the pure-Go fallback (CGO_ENABLED=0) as CI does.
 
 GO       ?= go
 PKGS     := ./...
 RESULTS  := results
-LOGS     := $(RESULTS)/logs
+EXAMPLES := quickstart typed-arena gc-pacing httpcache
 export CGO_ENABLED := 1
 
-.PHONY: all build vet test race cover fuzz bench micro experiments figures clean
+.PHONY: all build vet fmt test race nocgo cover fuzz micro examples experiments lab clean
 
 all: vet test build
 
+# build compiles every package and writes the harness and the examples to bin/.
 build:
 	$(GO) build $(PKGS)
 	$(GO) build -o bin/goarena-bench ./cmd/goarena-bench
-	$(GO) build -o bin/httpcache ./examples/httpcache
+	$(GO) build -o bin/goarena-lab ./cmd/goarena-lab
+	$(foreach e,$(EXAMPLES),$(GO) build -o bin/$(e) ./examples/$(e) &&) true
 
 vet:
 	$(GO) vet $(PKGS)
+
+# fmt fails if a file is not gofmt-formatted (as in CI).
+fmt:
+	@out="$$(gofmt -l .)"; if [ -n "$$out" ]; then echo "not gofmt-formatted:"; echo "$$out"; exit 1; fi
 
 test:
 	$(GO) test -count=1 $(PKGS)
@@ -25,20 +32,40 @@ test:
 race:
 	$(GO) test -race -count=1 $(PKGS)
 
+# nocgo vets, builds and tests the pure-Go fallback (arena in the Go heap).
+nocgo:
+	CGO_ENABLED=0 $(GO) vet $(PKGS)
+	CGO_ENABLED=0 $(GO) build $(PKGS)
+	CGO_ENABLED=0 $(GO) test -count=1 $(PKGS)
+
 cover:
-	$(GO) test -count=1 -coverprofile=$(RESULTS)/coverage.out $(PKGS)
-	$(GO) tool cover -func=$(RESULTS)/coverage.out
+	$(GO) test -count=1 -coverprofile=coverage.out $(PKGS)
+	$(GO) tool cover -func=coverage.out
 
 fuzz:
 	$(GO) test -run XXX -fuzz FuzzStore -fuzztime 60s ./store
+	$(GO) test -run XXX -fuzz FuzzEviction -fuzztime 60s ./store
 
 micro:
 	$(GO) test -run XXX -bench . -benchmem -count 5 ./internal/cmem ./arena ./store
+
+# examples runs the short, self-terminating examples (httpcache is a server).
+examples:
+	$(GO) run ./examples/quickstart
+	$(GO) run ./examples/typed-arena
+	$(GO) run ./examples/gc-pacing
 
 experiments:
 	$(GO) build -o bin/goarena-bench ./cmd/goarena-bench
 	./bin/goarena-bench matrix -exp E1,E1b,E2,E4,E5,E6,E7 -out $(RESULTS)/raw
 	./bin/goarena-bench aggregate -in $(RESULTS)/raw -out $(RESULTS)
 
+# lab starts the Benchmark Lab (docs/BENCHMARK_LAB.md) on http://127.0.0.1:8090;
+# it builds bin/goarena-bench itself when the binary is missing or stale.
+lab:
+	$(GO) run ./cmd/goarena-lab
+
+# clean keeps results/: on this branch (test-no-prod-ready) it holds the
+# recorded metrics of every version.
 clean:
-	rm -rf bin
+	rm -rf bin coverage.out
