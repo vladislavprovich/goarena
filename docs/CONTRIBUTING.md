@@ -2,7 +2,7 @@
 
 ## Setup
 
-goarena needs Go 1.27 or newer and cgo (`CGO_ENABLED=1` plus a C compiler in
+goarena needs Go 1.24 or newer and cgo (`CGO_ENABLED=1` plus a C compiler in
 `PATH`: gcc or clang on Linux/macOS, MinGW-w64 GCC on Windows; see
 [TROUBLESHOOTING.md](TROUBLESHOOTING.md#cgo-is-not-enabled)). The module
 uses only the standard library. It must also build and pass its tests
@@ -22,7 +22,8 @@ make build    # compile everything; harness and examples go to bin/
 ```
 
 CI (`.github/workflows/ci.yml`) runs the same steps on Linux, Windows and
-macOS, plus a Linux job with `CGO_ENABLED=0`; please make sure they pass
+macOS, plus a Linux job with `CGO_ENABLED=0`, each with Go 1.24.x and the
+latest stable release; please make sure they pass
 locally before opening a pull request.
 
 ## Code layout rules

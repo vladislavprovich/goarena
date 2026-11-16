@@ -4,6 +4,14 @@ All notable changes to this project are documented in this file. The format
 follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the
 project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Changed
+
+- Minimum supported Go version lowered to 1.24 (the version the library was
+  developed and benchmarked with); CI tests 1.24.x and the latest stable
+  release.
+
 ## [0.4.0] - 2026-10-14
 
 New, backward-compatible API (hence a minor release; 0.3.2 was never
