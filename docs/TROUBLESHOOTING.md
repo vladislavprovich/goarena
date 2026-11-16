@@ -28,7 +28,7 @@ General questions are answered in the [FAQ](FAQ.md).
 First diagnostic for almost every problem:
 
 ```sh
-go version          # Go 1.27 or newer
+go version          # Go 1.24 or newer
 go env CGO_ENABLED  # 1 for off-heap memory
 go env CC           # the C compiler cgo will run
 ```
@@ -125,7 +125,7 @@ not found in $PATH`.
 | Alpine | `apk add build-base` |
 | Arch | `sudo pacman -S base-devel` |
 
-In Docker, the Debian-based `golang:1.27` images include gcc; `golang:1.27-alpine`
+In Docker, the Debian-based `golang:1.24` images include gcc; `golang:1.24-alpine`
 does not (`RUN apk add build-base`). A cgo binary is dynamically linked
 against the C library of the build image by default, so the runtime image
 must provide the same C library: build on Debian and run on
@@ -133,7 +133,7 @@ must provide the same C library: build on Debian and run on
 on Alpine (musl). `scratch` and `distroless/static` images have no C library.
 
 ```dockerfile
-FROM golang:1.27 AS build
+FROM golang:1.24 AS build
 WORKDIR /src
 COPY . .
 RUN CGO_ENABLED=1 go build -o /app ./cmd/server

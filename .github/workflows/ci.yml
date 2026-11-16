@@ -11,12 +11,15 @@ permissions:
 
 jobs:
   test:
-    name: test (${{ matrix.os }})
+    name: test (${{ matrix.os }}, Go ${{ matrix.go }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        # 1.24 is the minimum supported version (go.mod); stable is the
+        # latest Go release.
+        go: ['1.24.x', 'stable']
     env:
       # goarena allocates its off-heap memory through cgo (internal/cmem).
       CGO_ENABLED: "1"
@@ -28,7 +31,7 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.27.x'
+          go-version: ${{ matrix.go }}
 
       # MinGW-w64 is preinstalled on the Windows runner image; make sure its
       # gcc is first on PATH so that cgo finds it.
@@ -44,7 +47,7 @@ jobs:
 
       - name: gofmt
         # Windows checkouts may convert line endings; check formatting once.
-        if: runner.os == 'Linux'
+        if: runner.os == 'Linux' && matrix.go == '1.24.x'
         run: |
           unformatted=$(gofmt -l .)
           if [ -n "$unformatted" ]; then
@@ -79,8 +82,12 @@ jobs:
   # lives in the Go heap). Everything must still build, pass and run;
   # "go build ./..." also compiles examples/httpcache.
   test-nocgo:
-    name: test (ubuntu-latest, CGO_ENABLED=0)
+    name: test (ubuntu-latest, CGO_ENABLED=0, Go ${{ matrix.go }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ['1.24.x', 'stable']
     env:
       CGO_ENABLED: "0"
     steps:
@@ -88,7 +95,7 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
-          go-version: '1.27.x'
+          go-version: ${{ matrix.go }}
 
       - name: go vet
         run: go vet ./...

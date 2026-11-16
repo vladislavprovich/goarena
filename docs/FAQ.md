@@ -63,7 +63,8 @@ is in [GUIDE.md](GUIDE.md#from-bigcache-or-freecache).
 
 ### Which Go versions and platforms are supported?
 
-Go 1.27 or newer (`go.mod`). CI tests Linux and Windows (amd64) and macOS
+Go 1.24 or newer (`go.mod`). CI tests Go 1.24.x and the latest stable
+release on Linux and Windows (amd64) and macOS
 (Apple Silicon, arm64) with cgo, plus a Linux build without cgo. The seqlock
 read path has an explicit read fence for weakly ordered processors (arm64,
 ppc64, riscv64, loong64). Process RSS in `gcstats` is reported on Linux and

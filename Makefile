@@ -1,4 +1,4 @@
-# goarena - common developer tasks. Requires Go >= 1.27 and a C compiler
+# goarena - common developer tasks. Requires Go >= 1.24 and a C compiler
 # (cgo). On Windows run "make" from Git Bash / MSYS2 with MinGW-w64 GCC.
 # "make nocgo" checks the pure-Go fallback (CGO_ENABLED=0) as CI does.
 

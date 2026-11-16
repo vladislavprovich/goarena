@@ -74,7 +74,7 @@ Dependencies point downwards only: `store -> arena -> internal/cmem` and
 `store -> gcpace`; `gcpace` and `gcstats` depend only on the standard
 library; the harness and the examples depend on everything. Only the
 standard library is used (no third-party modules); `go.mod` declares
-`go 1.27`, the minimum supported Go version. There is no Go code in the
+`go 1.24`, the minimum supported Go version. There is no Go code in the
 repository root: programs import `store` (or `arena` for the lower-level
 allocators) directly.
 
