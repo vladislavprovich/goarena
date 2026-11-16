@@ -137,7 +137,7 @@ More: `go run ./examples/quickstart` and the
 
 ## Installation
 
-Requirements: **Go 1.27+** and, for off-heap memory, **cgo**: `CGO_ENABLED=1`
+Requirements: **Go 1.24+** and, for off-heap memory, **cgo**: `CGO_ENABLED=1`
 and a C compiler in `PATH`.
 
 | OS | C compiler |
@@ -423,7 +423,7 @@ More in [docs/FAQ.md](docs/FAQ.md).
 
 ## Contributing
 
-Issues and pull requests are welcome. Development needs Go 1.27+ and a C
+Issues and pull requests are welcome. Development needs Go 1.24+ and a C
 compiler; `make` runs vet, tests and the build, `make race` the race
 detector, `make nocgo` the pure-Go mode. Please read
 [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) first.
